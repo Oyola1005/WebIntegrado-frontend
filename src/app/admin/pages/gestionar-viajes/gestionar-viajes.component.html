@@ -1,1 +1,96 @@
-<p>gestionar-viajes works!</p>
+<div class="row">
+  <div class="col-md-8">
+    <h2>Gestión de Viajes</h2>
+
+    <div *ngIf="loading" class="alert alert-info">Cargando...</div>
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+    <table class="table table-striped table-hover mt-3" *ngIf="viajes.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Salida</th>
+          <th>Llegada</th>
+          <th>Precio</th>
+          <th>Asientos</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of viajes">
+          <td>{{ v.id }}</td>
+          <td>{{ v.origen }}</td>
+          <td>{{ v.destino }}</td>
+          <td>{{ v.fechaSalida | date:'short' }}</td>
+          <td>{{ v.fechaLlegada | date:'short' }}</td>
+          <td>S/ {{ v.precio | number:'1.2-2' }}</td>
+          <td>{{ v.asientosDisponibles }}</td>
+          <td>{{ v.estado }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" (click)="editarViaje(v)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="eliminarViaje(v)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="!loading && viajes.length === 0" class="text-muted mt-3">
+      No hay viajes registrados.
+    </p>
+  </div>
+
+  <div class="col-md-4">
+    <h3>{{ modoEdicion ? 'Editar viaje' : 'Nuevo viaje' }}</h3>
+
+    <form [formGroup]="viajeForm" (ngSubmit)="guardarViaje()">
+      <div class="mb-2">
+        <label class="form-label">Origen</label>
+        <input type="text" class="form-control" formControlName="origen">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Destino</label>
+        <input type="text" class="form-control" formControlName="destino">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Fecha y hora de salida</label>
+        <input type="datetime-local" class="form-control" formControlName="fechaSalida">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Fecha y hora de llegada</label>
+        <input type="datetime-local" class="form-control" formControlName="fechaLlegada">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Precio</label>
+        <input type="number" class="form-control" formControlName="precio" step="0.01">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Asientos disponibles</label>
+        <input type="number" class="form-control" formControlName="asientosDisponibles">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <select class="form-select" formControlName="estado">
+          <option value="PROGRAMADO">PROGRAMADO</option>
+          <option value="COMPLETADO">COMPLETADO</option>
+          <option value="CANCELADO">CANCELADO</option>
+        </select>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="nuevoViaje()">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>

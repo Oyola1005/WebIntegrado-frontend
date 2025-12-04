@@ -1,16 +1,15 @@
-// src/app/auth/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
-export interface LoginRequest {
+interface LoginRequest {
   email: string;
   password: string;
 }
 
-export interface AuthResponse {
+interface AuthResponse {
   token: string;
-  rol: string;
+  rol: 'ADMIN' | 'CLIENTE';
 }
 
 @Injectable({
@@ -18,19 +17,19 @@ export interface AuthResponse {
 })
 export class AuthService {
 
-  // Ajusta el puerto o host si cambias tu backend
   private apiUrl = 'http://localhost:8080/api/auth';
 
   constructor(private http: HttpClient) {}
 
-  login(data: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
-      tap((res) => {
-        // Guardamos el token y el rol en el localStorage
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('rol', res.rol);
-      })
-    );
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap(res => {
+          // Guardar token y rol
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('rol', res.rol);
+        })
+      );
   }
 
   logout(): void {
@@ -40,6 +39,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   getRole(): string | null {

@@ -1,11 +1,13 @@
+// src/app/admin/admin-dashboard/admin-dashboard.component.ts
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.scss'
+  styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent {
-
-}
+export class AdminDashboardComponent {}

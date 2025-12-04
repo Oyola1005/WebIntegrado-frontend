@@ -18,7 +18,6 @@ export class LoginComponent {
   private router = inject(Router);
 
   form: FormGroup = this.fb.group({
-    // Tu HTML usa formControlName="username"
     username: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
@@ -36,10 +35,9 @@ export class LoginComponent {
 
     const { username, password } = this.form.value;
 
-    // <-- IMPORTANTE: mapear username -> email para el backend
     const payload = {
-      email: username,
-      password: password
+      email: username,    // backend usa "email"
+      password: password  // backend usa "password"
     };
 
     console.log('Enviando al backend:', payload);
@@ -49,15 +47,22 @@ export class LoginComponent {
 
     this.authService.login(payload).subscribe({
       next: (res) => {
-        this.loading = false;
         console.log('Login OK:', res);
+        this.loading = false;
 
-        // Después de login correcto → ir a una pantalla protegida
-        this.router.navigate(['/dashboard']);
+        // Redirección según el rol del usuario
+        if (res.rol === 'ADMIN') {
+          this.router.navigate(['/admin']);
+        } else if (res.rol === 'CLIENTE') {
+          this.router.navigate(['/cliente']);
+        } else {
+          // fallback improbable
+          this.router.navigate(['/auth']);
+        }
       },
       error: (err) => {
-        this.loading = false;
         console.error('Error en login:', err);
+        this.loading = false;
         this.errorMessage = 'Usuario o contraseña incorrectos';
       }
     });
