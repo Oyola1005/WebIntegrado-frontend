@@ -1,1 +1,103 @@
-<p>buscar-viajes works!</p>
+<h2>Buscar viajes</h2>
+
+<form [formGroup]="form" (ngSubmit)="buscar()" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <label class="form-label">Origen</label>
+    <input type="text" class="form-control" formControlName="origen" placeholder="Ej: Lima">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Destino</label>
+    <input type="text" class="form-control" formControlName="destino" placeholder="Ej: Chimbote">
+  </div>
+
+  <div class="col-md-4 d-flex align-items-end">
+    <button type="submit" class="btn btn-primary w-100">
+      Buscar
+    </button>
+  </div>
+</form>
+
+<div *ngIf="loading" class="alert alert-info">
+  Buscando viajes...
+</div>
+
+<div *ngIf="errorMsg" class="alert alert-danger">
+  {{ errorMsg }}
+</div>
+
+<div *ngIf="!loading && buscado && resultados.length === 0" class="alert alert-warning">
+  No se encontraron viajes para esa ruta.
+</div>
+
+<table class="table table-striped" *ngIf="!loading && resultados.length > 0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Origen</th>
+      <th>Destino</th>
+      <th>Salida</th>
+      <th>Llegada</th>
+      <th>Precio</th>
+      <th>Asientos</th>
+      <th>Estado</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of resultados">
+      <td>{{ v.id }}</td>
+      <td>{{ v.origen }}</td>
+      <td>{{ v.destino }}</td>
+      <td>{{ v.fechaSalida | date:'short' }}</td>
+      <td>{{ v.fechaLlegada | date:'short' }}</td>
+      <td>S/ {{ v.precio | number:'1.2-2' }}</td>
+      <td>{{ v.asientosDisponibles }}</td>
+      <td>{{ v.estado }}</td>
+      <td>
+        <button
+          class="btn btn-sm btn-success"
+          [disabled]="v.asientosDisponibles === 0 || v.estado !== 'PROGRAMADO'"
+          (click)="seleccionarViaje(v)">
+          Comprar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Bloque de compra de boleto -->
+<div class="mt-4" *ngIf="selectedViaje">
+  <h4>Comprar boleto</h4>
+  <p>
+    Viaje seleccionado:
+    <strong>{{ selectedViaje.origen }} → {{ selectedViaje.destino }}</strong>,
+    salida: {{ selectedViaje.fechaSalida | date:'short' }},
+    asientos disponibles: {{ selectedViaje.asientosDisponibles }}
+  </p>
+
+  <form [formGroup]="compraForm" (ngSubmit)="confirmarCompra()" class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">ID del pasajero</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="pasajeroId"
+        placeholder="Ej: 1">
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+      <button type="submit" class="btn btn-success w-100">
+        Confirmar compra
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="compraMsg" class="alert alert-success mt-3">
+    {{ compraMsg }}
+  </div>
+
+  <div *ngIf="compraError" class="alert alert-danger mt-3">
+    {{ compraError }}
+  </div>
+</div>

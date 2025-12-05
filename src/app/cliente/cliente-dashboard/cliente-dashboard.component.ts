@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-cliente-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './cliente-dashboard.component.html',
-  styleUrl: './cliente-dashboard.component.scss'
+  styleUrls: ['./cliente-dashboard.component.scss']
 })
-export class ClienteDashboardComponent {
-
-}
+export class ClienteDashboardComponent {}
