@@ -33,7 +33,7 @@ export class BuscarViajesComponent {
   form: FormGroup = this.fb.group({
     origen: ['', Validators.required],
     destino: ['', Validators.required],
-    fechaIda: [null],
+    fechaIda: [this.todayStr, Validators.required],  // ahora requerida
     fechaRetorno: [null]
   });
 
@@ -83,7 +83,7 @@ export class BuscarViajesComponent {
       return;
     }
 
-    const { origen, destino } = this.form.value;
+    const { origen, destino, fechaIda } = this.form.value;
 
     this.loading = true;
     this.errorMsg = '';
@@ -98,7 +98,7 @@ export class BuscarViajesComponent {
     this.compraMsg = '';
     this.compraError = '';
 
-    this.viajeService.buscarPorRuta(origen, destino).subscribe({
+    this.viajeService.buscarPorRuta(origen, destino, fechaIda).subscribe({
       next: (data: Viaje[]) => {
         this.resultados = data;
         this.loading = false;

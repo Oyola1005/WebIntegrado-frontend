@@ -27,10 +27,13 @@ export class ViajeService {
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-  buscarPorRuta(origen: string, destino: string) {
-  return this.http.get<Viaje[]>(`${this.apiUrl}/busqueda`, {
-    params: { origen, destino }
-  });
-}
 
+  // 👉 ahora acepta fechaIda opcional
+  buscarPorRuta(origen: string, destino: string, fechaIda?: string): Observable<Viaje[]> {
+    const params: any = { origen, destino };
+    if (fechaIda) {
+      params.fechaIda = fechaIda;  // mismo nombre que en el backend
+    }
+    return this.http.get<Viaje[]>(`${this.apiUrl}/busqueda`, { params });
+  }
 }
