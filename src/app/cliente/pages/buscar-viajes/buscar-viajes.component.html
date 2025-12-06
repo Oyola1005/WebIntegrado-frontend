@@ -82,7 +82,6 @@
 
 <!-- RESULTADOS Y COMPRA -->
 <div class="container mt-4">
-
   <!-- MENSAJES -->
   <div *ngIf="loading" class="alert alert-info">
     Buscando viajes...
@@ -137,9 +136,8 @@
     </div>
   </div>
 
-  <!-- BLOQUE DE SELECCIÓN DE ASIENTOS + COMPRA -->
+  <!-- BLOQUE DE SELECCIÓN DE ASIENTOS + RESUMEN -->
   <div class="compra-section mt-4" *ngIf="selectedViaje">
-
     <h4>De {{ selectedViaje.origen }} a {{ selectedViaje.destino }}</h4>
     <p class="compra-subtitle">
       Fecha: {{ selectedViaje.fechaSalida | date:'fullDate' }} •
@@ -150,8 +148,7 @@
 
     <!-- CONTENEDOR PRINCIPAL 2 COLUMNAS -->
     <div class="compra-layout">
-
-      <!-- COLUMNA IZQUIERDA (asientos) -->
+      <!-- COLUMNA IZQUIERDA (ASIENTOS) -->
       <div class="compra-left">
         <div class="seat-layout">
           <div class="seat-legend">
@@ -176,7 +173,7 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA (resumen) -->
+      <!-- COLUMNA DERECHA (RESUMEN + BOTONES) -->
       <div class="compra-right">
         <div class="resumen-card">
           <h5 class="titulo-resumen">Resumen de tu reserva</h5>
@@ -189,31 +186,80 @@
           <p><strong>Asientos:</strong> {{ resumenAsientos || '-' }}</p>
           <p><strong>Cantidad:</strong> {{ cantidadAsientos }}</p>
 
-          <p><strong>Precio por asiento:</strong> S/ {{ selectedViaje.precio | number:'1.2-2' }}</p>
+          <p><strong>Precio por asiento:</strong> S/
+            {{ selectedViaje.precio | number:'1.2-2' }}</p>
           <p><strong>Total a pagar:</strong>
             <span class="precio-total">S/ {{ totalAPagar | number:'1.2-2' }}</span>
           </p>
 
+          <!-- Paso 1: mostrar formularios de pasajeros -->
           <button
             type="button"
-            class="btn btn-success w-100 mt-2"
+            class="btn btn-primary w-100 mt-2"
             (click)="confirmarCompra()"
             [disabled]="loading || cantidadAsientos === 0">
             Confirmar compra
           </button>
 
+          <!-- Mensajes generales -->
           <div *ngIf="compraMsg" class="alert alert-success mt-3">
             {{ compraMsg }}
           </div>
-
           <div *ngIf="compraError" class="alert alert-danger mt-3">
             {{ compraError }}
           </div>
         </div>
       </div>
-
     </div>
 
-  </div>
+    <!-- FORMULARIO DE PASAJEROS (PASO 2) -->
+    <div *ngIf="mostrarFormularioPasajeros" class="pasajeros-form-card mt-4">
+      <h5>Datos de los pasajeros</h5>
+      <form [formGroup]="pasajerosForm" (ngSubmit)="finalizarCompra()">
+        <div formArrayName="pasajeros">
+          <div
+            class="pasajero-item"
+            *ngFor="let pasajeroGroup of pasajerosArray.controls; let i = index"
+            [formGroupName]="i">
 
+            <h6>Pasajero {{ i + 1 }} - Asiento {{
+              pasajeroGroup.get('asiento')?.value
+            }}</h6>
+
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label">Nombres</label>
+                <input type="text" class="form-control" formControlName="nombres" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Apellidos</label>
+                <input type="text" class="form-control" formControlName="apellidos" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">DNI</label>
+                <input type="text" class="form-control" formControlName="dni" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" formControlName="email" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Celular</label>
+                <input type="text" class="form-control" formControlName="celular" />
+              </div>
+            </div>
+
+            <hr *ngIf="i < pasajerosArray.length - 1" />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-success w-100 mt-3"
+          [disabled]="loading">
+          Finalizar compra
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
