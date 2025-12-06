@@ -1,8 +1,18 @@
+// src/app/auth/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  nombres: string;
+  apellidos: string;
+  dni: string;
+  telefono: string;
   email: string;
   password: string;
 }
@@ -21,11 +31,23 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  // LOGIN
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials)
       .pipe(
         tap(res => {
-          // Guardar token y rol
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('rol', res.rol);
+        })
+      );
+  }
+
+  // REGISTRO
+  register(data: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data)
+      .pipe(
+        tap(res => {
+          // después de registrarse, lo dejamos logeado
           localStorage.setItem('token', res.token);
           localStorage.setItem('rol', res.rol);
         })

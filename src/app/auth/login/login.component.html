@@ -1,55 +1,56 @@
+<!-- src/app/auth/login/login.component.html -->
 <div class="login-wrapper d-flex justify-content-center align-items-center">
-    <div class="login-card d-flex">
-  
-      <!-- Lado izquierdo (bienvenida) -->
-      <div class="login-left text-white d-flex flex-column justify-content-center p-4">
-        <h1 class="fw-bold mb-3">Hello, welcome!</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-  
-        <button class="btn btn-light mt-3">View more</button>
-      </div>
-  
-      <!-- Lado derecho (formulario) -->
-      <div class="login-right bg-white p-4">
-  
-        <h4 class="fw-bold mb-3">Iniciar sesión</h4>
-  
-        <!-- FORMULARIO REACTIVO REAL -->
-        <form [formGroup]="form" (ngSubmit)="login()">
-  
-          <div class="mb-3">
-            <label class="form-label">Usuario</label>
-            <input 
-              type="text" 
-              class="form-control" 
-              formControlName="username" 
-              placeholder="Ingresa tu usuario"
-            />
-          </div>
-  
-          <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input 
-              type="password" 
-              class="form-control" 
-              formControlName="password"
-              placeholder="Ingresa tu contraseña"
-            />
-          </div>
-  
-          <button type="submit" class="btn btn-primary w-100">
-            Login
-          </button>
-  
-        </form>
-  
-        <div class="text-center mt-3">
-          <span class="text-muted">¿No tienes cuenta?</span>
-          <a class="ms-1" href="#">Registrarse</a>
-        </div>
-  
-      </div>
-  
+  <div class="login-card d-flex">
+
+    <!-- Lado izquierdo (bienvenida) -->
+    <div class="login-left text-white d-flex flex-column justify-content-center p-4">
+      <h1 class="fw-bold mb-3">Hello, welcome!</h1>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+      <button class="btn btn-light mt-3">View more</button>
     </div>
+
+    <!-- Lado derecho (formulario) -->
+    <div class="login-right bg-white p-4">
+
+      <h4 class="fw-bold mb-3">Iniciar sesión</h4>
+
+      <form [formGroup]="form" (ngSubmit)="login()">
+        <div class="mb-3">
+          <label class="form-label">Usuario (correo)</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="username"
+            placeholder="Ingresa tu correo"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Ingresa tu contraseña"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+          {{ loading ? 'Ingresando...' : 'Login' }}
+        </button>
+
+        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+          {{ errorMessage }}
+        </div>
+      </form>
+
+      <div class="text-center mt-3">
+        <span class="text-muted">¿No tienes cuenta?</span>
+        <a class="ms-1" [routerLink]="['/auth/register']">Registrarse</a>
+      </div>
+
+    </div>
+
   </div>
-  
+</div>
