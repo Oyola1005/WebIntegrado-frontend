@@ -13,7 +13,7 @@ export class BoletoService {
   constructor(private http: HttpClient) {}
 
   comprar(req: CompraBoletoRequest): Observable<any> {
-    // Ajusta '/comprar' si en tu Swagger el endpoint se llama distinto
+    // El backend toma el pasajero desde el usuario logueado (JWT)
     return this.http.post<any>(`${this.apiUrl}/comprar`, req);
   }
 }

@@ -1,67 +1,78 @@
-<!-- HERO tipo RedBus -->
+<!-- HERO principal: barra de búsqueda tipo Transporte Miranda -->
 <section class="hero-bus">
   <div class="hero-overlay">
     <div class="hero-container">
-      <h1 class="hero-title">El poder de elegir tu bus</h1>
-      <p class="hero-subtitle">
-        Encuentra tu pasaje con Transporte Interprovincial Miranda
-      </p>
+      <h1 class="hero-title">Reserva tu viaje con Transporte Miranda</h1>
+
+      <!-- Tabs (solo pasajes activo por ahora) -->
+      <div class="hero-tabs">
+        <button class="tab active">Pasajes</button>
+        <button class="tab disabled" type="button">Encomiendas</button>
+      </div>
 
       <!-- Tarjeta de búsqueda -->
       <form [formGroup]="form" (ngSubmit)="buscar()" class="search-card">
-        <!-- Desde -->
+        <!-- ORIGEN -->
         <div class="search-field">
-          <label class="field-label">
-            <span class="field-icon">🚌</span> Desde
-          </label>
-          <input
-            type="text"
-            class="field-input"
-            formControlName="origen"
-            placeholder="Ej: Lima"
-          />
+          <label class="field-label">Desde</label>
+          <div class="field-input-wrapper">
+            <span class="field-icon">📍</span>
+            <select class="field-input" formControlName="origen">
+              <option value="" disabled selected>Seleccionar origen</option>
+              <option value="Lima">Lima</option>
+              <option value="Chimbote">Chimbote</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Hasta -->
+        <!-- DESTINO -->
         <div class="search-field">
-          <label class="field-label">
-            <span class="field-icon">🚌</span> Hasta
-          </label>
-          <input
-            type="text"
-            class="field-input"
-            formControlName="destino"
-            placeholder="Ej: Chimbote"
-          />
+          <label class="field-label">Hasta</label>
+          <div class="field-input-wrapper">
+            <span class="field-icon">📍</span>
+            <select class="field-input" formControlName="destino">
+              <option value="" disabled selected>Seleccionar destino</option>
+              <option value="Chimbote">Chimbote</option>
+              <option value="Lima">Lima</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Fecha de ida (solo visual por ahora) -->
+        <!-- FECHA IDA -->
         <div class="search-field">
-          <label class="field-label">
-            <span class="field-icon">📅</span> Fecha de ida
-          </label>
-          <input
-            type="date"
-            class="field-input"
-          />
+          <label class="field-label">Fecha de ida</label>
+          <div class="field-input-wrapper">
+            <span class="field-icon">📅</span>
+            <input
+              type="date"
+              class="field-input"
+              formControlName="fechaIda"
+              [min]="todayStr"
+            />
+          </div>
         </div>
 
-        <!-- Fecha de vuelta (opcional, solo visual) -->
+        <!-- FECHA RETORNO (opcional) -->
         <div class="search-field">
           <label class="field-label">
-            <span class="field-icon">📅</span> Fecha de vuelta
+            Fecha de retorno
             <span class="field-optional">(Opcional)</span>
           </label>
-          <input
-            type="date"
-            class="field-input"
-          />
+          <div class="field-input-wrapper">
+            <span class="field-icon">📅</span>
+            <input
+              type="date"
+              class="field-input"
+              formControlName="fechaRetorno"
+              [min]="minFechaRetorno"
+            />
+          </div>
         </div>
 
-        <!-- Botón BUSCAR -->
+        <!-- BOTÓN BUSCAR -->
         <div class="search-button-wrapper">
           <button type="submit" class="btn-search">
-            BUSCAR
+            🔍 Buscar
           </button>
         </div>
       </form>
@@ -69,10 +80,10 @@
   </div>
 </section>
 
-<!-- CONTENIDO INFERIOR: resultados + compra, usando tu lógica actual -->
+<!-- RESULTADOS Y COMPRA -->
 <div class="container mt-4">
-  <h2 class="mb-3">Resultados de búsqueda</h2>
 
+  <!-- MENSAJES -->
   <div *ngIf="loading" class="alert alert-info">
     Buscando viajes...
   </div>
@@ -82,78 +93,127 @@
   </div>
 
   <div *ngIf="!loading && buscado && resultados.length === 0" class="alert alert-warning">
-    No se encontraron viajes para esa ruta.
+    No se encontraron viajes para esa búsqueda.
   </div>
 
-  <table class="table table-striped" *ngIf="!loading && resultados.length > 0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Origen</th>
-        <th>Destino</th>
-        <th>Salida</th>
-        <th>Llegada</th>
-        <th>Precio</th>
-        <th>Asientos</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let v of resultados">
-        <td>{{ v.id }}</td>
-        <td>{{ v.origen }}</td>
-        <td>{{ v.destino }}</td>
-        <td>{{ v.fechaSalida | date:'short' }}</td>
-        <td>{{ v.fechaLlegada | date:'short' }}</td>
-        <td>S/ {{ v.precio | number:'1.2-2' }}</td>
-        <td>{{ v.asientosDisponibles }}</td>
-        <td>{{ v.estado }}</td>
-        <td>
+  <!-- LISTA DE VIAJES EN TARJETAS -->
+  <div *ngIf="!loading && resultados.length > 0" class="result-header">
+    <h3>Resultados disponibles para tu búsqueda</h3>
+  </div>
+
+  <div class="viajes-list" *ngIf="!loading && resultados.length > 0">
+    <div class="viaje-card" *ngFor="let v of resultados">
+      <div class="viaje-main">
+        <div class="viaje-info">
+          <h5 class="viaje-ruta">
+            De {{ v.origen }} a {{ v.destino }}
+          </h5>
+          <p class="viaje-fecha">
+            Salida: <strong>{{ v.fechaSalida | date:'shortDate' }}</strong>
+          </p>
+          <p class="viaje-detalle">
+            <span>Hora de salida: <strong>{{ v.fechaSalida | date:'HH:mm' }}</strong></span>
+            <span>Hora de llegada: <strong>{{ v.fechaLlegada | date:'HH:mm' }}</strong></span>
+          </p>
+          <p class="viaje-detalle">
+            <span>Asientos disponibles: <strong>{{ v.asientosDisponibles }}</strong></span>
+            <span>Estado: <strong>{{ v.estado }}</strong></span>
+          </p>
+        </div>
+
+        <div class="viaje-precio">
+          <div class="precio-monto">
+            S/ {{ v.precio | number:'1.2-2' }}
+          </div>
+          <div class="precio-label">por pasajero</div>
           <button
-            class="btn btn-sm btn-success"
+            class="btn-ver-asientos"
             [disabled]="v.asientosDisponibles === 0 || v.estado !== 'PROGRAMADO'"
             (click)="seleccionarViaje(v)">
-            Comprar
+            Ver asientos
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Bloque de compra de boleto -->
-  <div class="mt-4" *ngIf="selectedViaje">
-    <h4>Comprar boleto</h4>
-    <p>
-      Viaje seleccionado:
-      <strong>{{ selectedViaje.origen }} → {{ selectedViaje.destino }}</strong>,
-      salida: {{ selectedViaje.fechaSalida | date:'short' }},
-      asientos disponibles: {{ selectedViaje.asientosDisponibles }}
-    </p>
-
-    <form [formGroup]="compraForm" (ngSubmit)="confirmarCompra()" class="row g-3">
-      <div class="col-md-4">
-        <label class="form-label">ID del pasajero</label>
-        <input
-          type="number"
-          class="form-control"
-          formControlName="pasajeroId"
-          placeholder="Ej: 1">
+        </div>
       </div>
-
-      <div class="col-md-4 d-flex align-items-end">
-        <button type="submit" class="btn btn-success w-100">
-          Confirmar compra
-        </button>
-      </div>
-    </form>
-
-    <div *ngIf="compraMsg" class="alert alert-success mt-3">
-      {{ compraMsg }}
-    </div>
-
-    <div *ngIf="compraError" class="alert alert-danger mt-3">
-      {{ compraError }}
     </div>
   </div>
+
+  <!-- BLOQUE DE SELECCIÓN DE ASIENTOS + COMPRA -->
+  <div class="compra-section mt-4" *ngIf="selectedViaje">
+
+    <h4>De {{ selectedViaje.origen }} a {{ selectedViaje.destino }}</h4>
+    <p class="compra-subtitle">
+      Fecha: {{ selectedViaje.fechaSalida | date:'fullDate' }} •
+      Salida: {{ selectedViaje.fechaSalida | date:'HH:mm' }} •
+      Llegada: {{ selectedViaje.fechaLlegada | date:'HH:mm' }} •
+      Asientos disponibles: {{ selectedViaje.asientosDisponibles }}
+    </p>
+
+    <!-- CONTENEDOR PRINCIPAL 2 COLUMNAS -->
+    <div class="compra-layout">
+
+      <!-- COLUMNA IZQUIERDA (asientos) -->
+      <div class="compra-left">
+        <div class="seat-layout">
+          <div class="seat-legend">
+            <span><span class="legend-box available"></span>Disponible</span>
+            <span><span class="legend-box selected"></span>Seleccionado</span>
+          </div>
+
+          <div class="seat-grid">
+            <ng-container *ngFor="let seat of seatNumbers">
+              <input
+                #seatCheckbox
+                type="checkbox"
+                class="seat-input"
+                [id]="'seat-' + seat"
+                (change)="onSeatToggle(seat, seatCheckbox.checked)"
+              />
+              <label class="seat-label" [for]="'seat-' + seat">
+                {{ seat }}
+              </label>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA (resumen) -->
+      <div class="compra-right">
+        <div class="resumen-card">
+          <h5 class="titulo-resumen">Resumen de tu reserva</h5>
+
+          <p><strong>Empresa:</strong> Transporte Miranda</p>
+          <p><strong>Origen:</strong> {{ selectedViaje.origen }}</p>
+          <p><strong>Destino:</strong> {{ selectedViaje.destino }}</p>
+          <p><strong>Hora de salida:</strong> {{ selectedViaje.fechaSalida | date:'HH:mm' }}</p>
+
+          <p><strong>Asientos:</strong> {{ resumenAsientos || '-' }}</p>
+          <p><strong>Cantidad:</strong> {{ cantidadAsientos }}</p>
+
+          <p><strong>Precio por asiento:</strong> S/ {{ selectedViaje.precio | number:'1.2-2' }}</p>
+          <p><strong>Total a pagar:</strong>
+            <span class="precio-total">S/ {{ totalAPagar | number:'1.2-2' }}</span>
+          </p>
+
+          <button
+            type="button"
+            class="btn btn-success w-100 mt-2"
+            (click)="confirmarCompra()"
+            [disabled]="loading || cantidadAsientos === 0">
+            Confirmar compra
+          </button>
+
+          <div *ngIf="compraMsg" class="alert alert-success mt-3">
+            {{ compraMsg }}
+          </div>
+
+          <div *ngIf="compraError" class="alert alert-danger mt-3">
+            {{ compraError }}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

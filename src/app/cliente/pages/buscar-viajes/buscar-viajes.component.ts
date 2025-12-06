@@ -5,6 +5,7 @@ import { ViajeService } from '../../../core/services/viaje.service';
 import { Viaje } from '../../../core/models/viaje.model';
 import { BoletoService } from '../../../core/services/boleto.service';
 import { CompraBoletoRequest } from '../../../core/models/compra-boleto.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-buscar-viajes',
@@ -19,10 +20,21 @@ export class BuscarViajesComponent {
   private viajeService = inject(ViajeService);
   private boletoService = inject(BoletoService);
 
-  // formulario de búsqueda
+  // 👉 FECHA DE HOY (para bloquear días pasados)
+  todayStr: string = new Date().toISOString().split('T')[0];
+
+  // 👉 Mínimo permitido para la fecha de retorno
+  get minFechaRetorno(): string {
+    const fechaIda = this.form.get('fechaIda')?.value;
+    return fechaIda || this.todayStr;
+  }
+
+  // FORMULARIO DE BÚSQUEDA
   form: FormGroup = this.fb.group({
     origen: ['', Validators.required],
-    destino: ['', Validators.required]
+    destino: ['', Validators.required],
+    fechaIda: [null],
+    fechaRetorno: [null]
   });
 
   resultados: Viaje[] = [];
@@ -30,16 +42,41 @@ export class BuscarViajesComponent {
   errorMsg = '';
   buscado = false;
 
-  // compra de boleto
+  // VIAJE SELECCIONADO
   selectedViaje: Viaje | null = null;
 
-  compraForm: FormGroup = this.fb.group({
-    pasajeroId: [null, [Validators.required]]
-  });
+  // ASIENTOS
+  seatNumbers: number[] = Array.from({ length: 40 }, (_, i) => i + 1);
+  selectedSeats: number[] = [];
+  resumenAsientos: string = '';
+  cantidadAsientos = 0;
+  totalAPagar = 0;
 
+  // MENSAJES
   compraMsg = '';
   compraError = '';
 
+  // Toggle de asientos
+  onSeatToggle(seatNumber: number, checked: boolean): void {
+    if (checked) {
+      if (!this.selectedSeats.includes(seatNumber)) {
+        this.selectedSeats.push(seatNumber);
+      }
+    } else {
+      this.selectedSeats = this.selectedSeats.filter(s => s !== seatNumber);
+    }
+
+    this.resumenAsientos = this.selectedSeats.join(', ');
+    this.cantidadAsientos = this.selectedSeats.length;
+
+    if (this.selectedViaje) {
+      this.totalAPagar = this.cantidadAsientos * this.selectedViaje.precio;
+    } else {
+      this.totalAPagar = 0;
+    }
+  }
+
+  // Buscar viajes
   buscar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -51,7 +88,13 @@ export class BuscarViajesComponent {
     this.loading = true;
     this.errorMsg = '';
     this.buscado = true;
-    this.selectedViaje = null;      // limpiar selección anterior
+
+    // reset selección
+    this.selectedViaje = null;
+    this.selectedSeats = [];
+    this.resumenAsientos = '';
+    this.cantidadAsientos = 0;
+    this.totalAPagar = 0;
     this.compraMsg = '';
     this.compraError = '';
 
@@ -60,63 +103,73 @@ export class BuscarViajesComponent {
         this.resultados = data;
         this.loading = false;
       },
-      error: (err: any) => {
-        console.error(err);
+      error: () => {
         this.errorMsg = 'Ocurrió un error al buscar los viajes.';
         this.loading = false;
       }
     });
   }
 
-  // cuando el usuario hace clic en "Comprar"
+  // Seleccionar viaje
   seleccionarViaje(viaje: Viaje): void {
     this.selectedViaje = viaje;
+    this.selectedSeats = [];
+    this.resumenAsientos = '';
+    this.cantidadAsientos = 0;
+    this.totalAPagar = 0;
     this.compraMsg = '';
     this.compraError = '';
-    this.compraForm.reset({
-      pasajeroId: null
-    });
   }
 
+  // Confirmar compra
   confirmarCompra(): void {
-    if (!this.selectedViaje || this.compraForm.invalid) {
-      this.compraForm.markAllAsTouched();
+    if (!this.selectedViaje) {
+      this.compraError = 'Debes seleccionar un viaje.';
+      this.compraMsg = '';
       return;
     }
 
-    const pasajeroId = this.compraForm.value.pasajeroId;
+    if (this.selectedSeats.length === 0) {
+      this.compraError = 'Selecciona al menos un asiento.';
+      this.compraMsg = '';
+      return;
+    }
+
+    if (this.selectedSeats.length > this.selectedViaje.asientosDisponibles) {
+      this.compraError = 'No hay suficientes asientos disponibles para esa cantidad.';
+      this.compraMsg = '';
+      return;
+    }
 
     const payload: CompraBoletoRequest = {
-      viajeId: this.selectedViaje.id!,   // ya sabemos que tiene id
-      pasajeroId: pasajeroId
+      viajeId: this.selectedViaje.id!
     };
+
+    // Creamos una petición por cada asiento seleccionado
+    const peticiones = this.selectedSeats.map(() => this.boletoService.comprar(payload));
 
     this.loading = true;
     this.compraMsg = '';
     this.compraError = '';
 
-    this.boletoService.comprar(payload).subscribe({
-      next: (res: any) => {
-        console.log('Compra OK:', res);
+    forkJoin(peticiones).subscribe({
+      next: (resArr: any[]) => {
+        this.compraMsg = `Se compraron ${resArr.length} boleto(s) correctamente.`;
         this.loading = false;
-        this.compraMsg = 'Boleto comprado correctamente.';
-        // refrescar lista para ver asientos actualizados
-        this.buscar();
+        this.buscar(); // recargar para ver asientos actualizados
       },
       error: (err: any) => {
         console.error(err);
         this.loading = false;
 
-        // Si el backend manda un mensaje de error en texto plano (String)
         if (err.status === 400 && typeof err.error === 'string') {
-          this.compraError = err.error; // ej: "No existe pasajero con id: 1"
+          this.compraError = err.error;
         } else if (err.status === 500 && typeof err.error === 'string') {
           this.compraError = 'Error interno: ' + err.error;
         } else {
-          this.compraError = 'No se pudo completar la compra. Verifica los datos.';
+          this.compraError = 'No se pudo completar la compra.';
         }
       }
-
     });
   }
 }

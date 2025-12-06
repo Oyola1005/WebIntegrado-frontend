@@ -1,12 +1,25 @@
-/* HERO principal estilo RedBus */
+/* Colores base aproximados a las capturas */
+$miranda-blue: #0b3b73;
+$miranda-blue-light: #1565c0;
+$miranda-accent: #007bff;
+$miranda-bg-card: #ffffff;
+$miranda-bg-soft: #f4f6fb;
+
+/* HERO superior */
 .hero-bus {
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  padding: 3rem 0 4rem;
+  background: $miranda-blue url('/assets/img/bus-miranda.jpg') center/cover no-repeat;
+  position: relative;
+  padding: 3.5rem 0 4.5rem;
   color: #ffffff;
 }
 
 .hero-overlay {
-  backdrop-filter: blur(2px);
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 59, 115, 0.9),
+    rgba(11, 59, 115, 0.8)
+  );
+  padding: 1.5rem 0 2rem;
 }
 
 .hero-container {
@@ -16,15 +29,39 @@
 }
 
 .hero-title {
+  text-align: center;
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 0.25rem;
+  margin-bottom: 1rem;
 }
 
-.hero-subtitle {
-  font-size: 0.95rem;
-  opacity: 0.9;
-  margin-bottom: 1.75rem;
+/* Tabs (Pasajes / Encomiendas) */
+.hero-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-tabs .tab {
+  border-radius: 999px;
+  border: none;
+  padding: 0.4rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.hero-tabs .tab.active {
+  background: #ffffff;
+  color: $miranda-blue;
+}
+
+.hero-tabs .tab.disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* Tarjeta de búsqueda */
@@ -35,16 +72,16 @@
   background: #ffffff;
   border-radius: 999px;
   padding: 1rem 1.5rem;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
   gap: 0.75rem;
 }
 
-/* Cada campo de la barra de búsqueda */
+/* Campos */
 .search-field {
-  flex: 1 1 180px;
+  flex: 1 1 200px;
   display: flex;
   flex-direction: column;
-  min-width: 150px;
+  min-width: 170px;
 }
 
 .field-label {
@@ -52,13 +89,6 @@
   font-weight: 600;
   color: #555;
   margin-bottom: 0.15rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.field-icon {
-  font-size: 0.9rem;
 }
 
 .field-optional {
@@ -68,18 +98,31 @@
   margin-left: 0.25rem;
 }
 
-.field-input {
+.field-input-wrapper {
+  display: flex;
+  align-items: center;
   border-radius: 999px;
-  border: 1px solid #e2e2e2;
-  padding: 0.55rem 0.9rem;
-  font-size: 0.9rem;
+  border: 1px solid #e0e3ea;
+  background: #ffffff;
+  padding: 0.25rem 0.75rem;
+}
+
+.field-icon {
+  font-size: 1rem;
+  margin-right: 0.4rem;
+  color: #a0a4b8;
+}
+
+.field-input {
+  border: none;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  flex: 1;
+  font-size: 0.9rem;
+  background: transparent;
 }
 
 .field-input:focus {
-  border-color: #ff416c;
-  box-shadow: 0 0 0 3px rgba(255, 65, 108, 0.22);
+  outline: none;
 }
 
 /* Botón BUSCAR */
@@ -87,19 +130,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 150px;
+  flex: 0 0 170px;
 }
 
 .btn-search {
   width: 100%;
   border: none;
   border-radius: 999px;
-  padding: 0.65rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.03em;
   color: #ffffff;
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  background: linear-gradient(135deg, $miranda-blue-light, $miranda-accent);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.15s ease, opacity 0.1s ease;
   text-transform: uppercase;
@@ -107,19 +150,204 @@
 
 .btn-search:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-  opacity: 0.96;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  opacity: 0.97;
 }
 
 .btn-search:active {
   transform: translateY(0);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* Responsivo para pantallas pequeñas */
+/* Resultados */
+.result-header {
+  margin-bottom: 0.75rem;
+}
+
+.result-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Tarjetas de viajes */
+.viajes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.viaje-card {
+  background: $miranda-bg-card;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e3e6f0;
+}
+
+.viaje-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.viaje-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.viaje-ruta {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.viaje-fecha {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.viaje-detalle {
+  font-size: 0.85rem;
+  color: #555;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+}
+
+.viaje-precio {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 140px;
+}
+
+.precio-monto {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: $miranda-blue-light;
+}
+
+.precio-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.btn-ver-asientos {
+  border-radius: 999px;
+  border: none;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: $miranda-blue-light;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-ver-asientos:hover:not(:disabled) {
+  background: $miranda-accent;
+  transform: translateY(-1px);
+}
+
+.btn-ver-asientos:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Sección de compra */
+.compra-section {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: $miranda-bg-soft;
+  border: 1px solid #e0e3ea;
+}
+
+.compra-subtitle {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Mapa de asientos */
+.seat-layout {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.seat-legend {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 0.3rem;
+}
+
+.legend-box.available {
+  background: #1abc9c;
+}
+
+.legend-box.selected {
+  background: $miranda-accent;
+}
+
+/* Grid de asientos (sin tocar TS) */
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+  max-width: 260px;
+}
+
+/* Inputs ocultos, labels son los "asientos" */
+.seat-input {
+  display: none;
+}
+
+.seat-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  padding: 0.35rem 0;
+  cursor: pointer;
+  background: #1abc9c;
+  color: #ffffff;
+  user-select: none;
+  transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.seat-label:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Cuando el checkbox está marcado, el asiento se ve como "seleccionado" */
+.seat-input:checked + .seat-label {
+  background: $miranda-accent;
+}
+
+/* Resumen de compra */
+.resumen-compra {
+  margin-top: 1rem;
+}
+
+/* Responsivo */
 @media (max-width: 768px) {
   .hero-bus {
-    padding: 2.2rem 0 3rem;
+    padding: 2.5rem 0 3.5rem;
   }
 
   .search-card {
@@ -131,7 +359,60 @@
     flex: 1 1 100%;
   }
 
-  .btn-search {
-    margin-top: 0.25rem;
+  .viaje-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .viaje-precio {
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+/* Layout en 2 columnas */
+.compra-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+/* Columna izquierda */
+.compra-left {
+  flex: 2;
+}
+
+/* Columna derecha */
+.compra-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.resumen-card {
+  background: #ffffff;
+  padding: 1.5rem 1.8rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e0e4ee;
+  width: 100%;
+}
+
+.titulo-resumen {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0b3b73;
+}
+
+.precio-total {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0b3b73;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .compra-layout {
+    flex-direction: column;
   }
 }
