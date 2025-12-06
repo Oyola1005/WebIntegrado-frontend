@@ -1,7 +1,5 @@
-import { Component, inject } from '@angular/core';
-import {
-  CommonModule
-} from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -14,6 +12,8 @@ import { Viaje } from '../../../core/models/viaje.model';
 import { BoletoService } from '../../../core/services/boleto.service';
 import { CompraBoletoRequest } from '../../../core/models/compra-boleto.model';
 import { forkJoin } from 'rxjs';
+import { PasajeroService } from '../../../core/services/pasajero.service';
+import { Pasajero } from '../../../core/models/pasajero.model';
 
 @Component({
   selector: 'app-buscar-viajes',
@@ -22,22 +22,22 @@ import { forkJoin } from 'rxjs';
   templateUrl: './buscar-viajes.component.html',
   styleUrls: ['./buscar-viajes.component.scss']
 })
-export class BuscarViajesComponent {
+export class BuscarViajesComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private viajeService = inject(ViajeService);
   private boletoService = inject(BoletoService);
+  private pasajeroService = inject(PasajeroService);
 
-  // 👉 FECHA DE HOY (para bloquear días pasados)
+  // ====== FECHAS ======
   todayStr: string = new Date().toISOString().split('T')[0];
 
-  // 👉 Mínimo permitido para la fecha de retorno
   get minFechaRetorno(): string {
     const fechaIda = this.form.get('fechaIda')?.value;
     return fechaIda || this.todayStr;
   }
 
-  // FORMULARIO DE BÚSQUEDA
+  // ====== FORM BUSQUEDA ======
   form: FormGroup = this.fb.group({
     origen: ['', Validators.required],
     destino: ['', Validators.required],
@@ -50,18 +50,23 @@ export class BuscarViajesComponent {
   errorMsg = '';
   buscado = false;
 
-  // VIAJE SELECCIONADO
+  // ====== VIAJE / ASIENTOS ======
   selectedViaje: Viaje | null = null;
 
-  // ASIENTOS
   seatNumbers: number[] = Array.from({ length: 40 }, (_, i) => i + 1);
   selectedSeats: number[] = [];
-  resumenAsientos: string = '';
+  resumenAsientos = '';
   cantidadAsientos = 0;
   totalAPagar = 0;
 
-  // FORMULARIO DE PASAJEROS (paso 2)
-  mostrarFormularioPasajeros = false;
+  // ====== MENSAJES ======
+  compraMsg = '';
+  compraError = '';
+
+  // ====== PASAJERO ACTUAL (del backend) ======
+  pasajeroActual: Pasajero | null = null;
+
+  // ====== FORMULARIO DE PASAJEROS ======
   pasajerosForm: FormGroup = this.fb.group({
     pasajeros: this.fb.array([])
   });
@@ -70,11 +75,84 @@ export class BuscarViajesComponent {
     return this.pasajerosForm.get('pasajeros') as FormArray;
   }
 
-  // MENSAJES
-  compraMsg = '';
-  compraError = '';
+  mostrarFormularioPasajeros = false;
 
-  // ===================== ASIENTOS =====================
+  // ==========================
+  // CICLO DE VIDA
+  // ==========================
+  ngOnInit(): void {
+    this.cargarPasajeroActual();
+  }
+
+  private cargarPasajeroActual(): void {
+    this.pasajeroService.getPerfilActual().subscribe({
+      next: (p: Pasajero) => {
+        this.pasajeroActual = p;
+      },
+      error: (err) => {
+        console.error('No se pudo cargar el pasajero actual', err);
+        // Si falla, simplemente no autocompletamos
+      }
+    });
+  }
+
+  // ==========================
+  // BUSCAR VIAJES
+  // ==========================
+  buscar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const { origen, destino, fechaIda } = this.form.value;
+
+    this.loading = true;
+    this.errorMsg = '';
+    this.buscado = true;
+
+    // reset selección
+    this.selectedViaje = null;
+    this.selectedSeats = [];
+    this.resumenAsientos = '';
+    this.cantidadAsientos = 0;
+    this.totalAPagar = 0;
+    this.compraMsg = '';
+    this.compraError = '';
+    this.mostrarFormularioPasajeros = false;
+    this.pasajerosArray.clear();
+
+    // enviamos fechaIda (puede ser null)
+    this.viajeService.buscarPorRuta(origen, destino, fechaIda).subscribe({
+      next: (data: Viaje[]) => {
+        this.resultados = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMsg = 'Ocurrió un error al buscar los viajes.';
+        this.loading = false;
+      }
+    });
+  }
+
+  // ==========================
+  // SELECCIONAR VIAJE
+  // ==========================
+  seleccionarViaje(viaje: Viaje): void {
+    this.selectedViaje = viaje;
+    this.selectedSeats = [];
+    this.resumenAsientos = '';
+    this.cantidadAsientos = 0;
+    this.totalAPagar = 0;
+    this.compraMsg = '';
+    this.compraError = '';
+    this.mostrarFormularioPasajeros = false;
+    this.pasajerosArray.clear();
+  }
+
+  // ==========================
+  // TOGGLE ASIENTOS
+  // ==========================
   onSeatToggle(seatNumber: number, checked: boolean): void {
     if (checked) {
       if (!this.selectedSeats.includes(seatNumber)) {
@@ -93,60 +171,56 @@ export class BuscarViajesComponent {
       this.totalAPagar = 0;
     }
 
-    // si cambia la selección, ocultamos el form de pasajeros
-    this.mostrarFormularioPasajeros = false;
+    // reconstruimos formularios cada vez que cambia la selección
+    this.construirFormularioPasajeros();
   }
 
-  // ===================== BÚSQUEDA =====================
-  buscar(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  // Construye el FormArray de pasajeros
+  private construirFormularioPasajeros(): void {
+    const arr = this.pasajerosArray;
+    arr.clear();
+
+    if (!this.selectedViaje || this.selectedSeats.length === 0) {
+      this.mostrarFormularioPasajeros = false;
       return;
     }
 
-    const { origen, destino } = this.form.value;
+    this.selectedSeats.forEach((seat, index) => {
+      // valores por defecto (vacíos)
+      let nombres = '';
+      let apellidos = '';
+      let dni = '';
+      let email = '';
+      let celular = '';
 
-    this.loading = true;
-    this.errorMsg = '';
-    this.buscado = true;
-
-    // reset selección
-    this.selectedViaje = null;
-    this.selectedSeats = [];
-    this.resumenAsientos = '';
-    this.cantidadAsientos = 0;
-    this.totalAPagar = 0;
-    this.compraMsg = '';
-    this.compraError = '';
-    this.mostrarFormularioPasajeros = false;
-    this.pasajerosArray.clear();
-
-    this.viajeService.buscarPorRuta(origen, destino).subscribe({
-      next: (data: Viaje[]) => {
-        this.resultados = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.errorMsg = 'Ocurrió un error al buscar los viajes.';
-        this.loading = false;
+      // SOLO EL PRIMER PASAJERO se autocompleta con el perfil
+      if (index === 0 && this.pasajeroActual) {
+        nombres = this.pasajeroActual.nombres;
+        apellidos = this.pasajeroActual.apellidos;
+        dni = this.pasajeroActual.dni;
+        email = this.pasajeroActual.email;
+        celular = this.pasajeroActual.telefono;
       }
+
+      arr.push(
+        this.fb.group({
+          asiento: [seat],
+          nombres: [nombres, Validators.required],
+          apellidos: [apellidos, Validators.required],
+          dni: [dni, [Validators.required, Validators.pattern(/^\d{8}$/)]],
+          email: [email, [Validators.required, Validators.email]],
+          celular: [celular, [Validators.required, Validators.pattern(/^\d{9}$/)]]
+        })
+      );
     });
+
+    this.mostrarFormularioPasajeros = this.selectedSeats.length > 0;
   }
 
-  // ===================== SELECCIONAR VIAJE =====================
-  seleccionarViaje(viaje: Viaje): void {
-    this.selectedViaje = viaje;
-    this.selectedSeats = [];
-    this.resumenAsientos = '';
-    this.cantidadAsientos = 0;
-    this.totalAPagar = 0;
-    this.compraMsg = '';
-    this.compraError = '';
-    this.mostrarFormularioPasajeros = false;
-    this.pasajerosArray.clear();
-  }
-
-  // ===================== PASO 1: CONFIRMAR (MOSTRAR FORM) =====================
+  // ==========================
+  // PASO 1: Mostrar formulario pasajeros
+  // (botón "Confirmar compra" del resumen)
+  // ==========================
   confirmarCompra(): void {
     if (!this.selectedViaje) {
       this.compraError = 'Debes seleccionar un viaje.';
@@ -160,61 +234,33 @@ export class BuscarViajesComponent {
       return;
     }
 
-    if (this.selectedSeats.length > this.selectedViaje.asientosDisponibles) {
-      this.compraError =
-        'No hay suficientes asientos disponibles para esa cantidad.';
-      this.compraMsg = '';
-      return;
-    }
-
-    // Generar formularios de pasajeros
-    this.pasajerosArray.clear();
-    this.selectedSeats.forEach(seat => {
-      this.pasajerosArray.push(
-        this.fb.group({
-          asiento: [seat],
-          nombres: ['', Validators.required],
-          apellidos: ['', Validators.required],
-          dni: ['', [Validators.required, Validators.pattern(/^[0-9]{8}$/)]],
-          email: ['', [Validators.required, Validators.email]],
-          celular: ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]]
-        })
-      );
-    });
-
-    this.mostrarFormularioPasajeros = true;
     this.compraError = '';
     this.compraMsg = '';
+
+    // Ya se construye en onSeatToggle, aquí solo aseguramos que esté visible
+    this.mostrarFormularioPasajeros = true;
   }
 
-  // ===================== PASO 2: FINALIZAR COMPRA =====================
+  // ==========================
+  // PASO 2: Enviar compra al backend
+  // (botón "Finalizar compra" del formulario)
+  // ==========================
   finalizarCompra(): void {
     if (!this.selectedViaje) {
-      this.compraError = 'Debes seleccionar un viaje.';
-      this.compraMsg = '';
-      return;
-    }
-
-    if (!this.mostrarFormularioPasajeros) {
-      this.compraError = 'Primero confirma la compra para ingresar los datos.';
-      this.compraMsg = '';
       return;
     }
 
     if (this.pasajerosForm.invalid) {
       this.pasajerosForm.markAllAsTouched();
-      this.compraError = 'Completa todos los datos de los pasajeros.';
-      this.compraMsg = '';
       return;
     }
 
     const payload: CompraBoletoRequest = {
       viajeId: this.selectedViaje.id!
-      // 👉 el backend sigue usando el usuario logueado como "pasajero principal"
-      // si luego quieres mandar cada pasajero, habría que ampliar el DTO.
+      // si luego decides mandar datos de pasajeros,
+      // aquí se ampliaría el payload
     };
 
-    // Creamos una petición por cada asiento seleccionado
     const peticiones = this.selectedSeats.map(() =>
       this.boletoService.comprar(payload)
     );
@@ -227,8 +273,8 @@ export class BuscarViajesComponent {
       next: (resArr: any[]) => {
         this.compraMsg = `Se compraron ${resArr.length} boleto(s) correctamente.`;
         this.loading = false;
+        this.buscar(); // recargar viajes y asientos
         this.mostrarFormularioPasajeros = false;
-        this.buscar(); // recargar para ver asientos actualizados
       },
       error: (err: any) => {
         console.error(err);
