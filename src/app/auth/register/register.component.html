@@ -1,65 +1,184 @@
-<div class="register-wrapper d-flex justify-content-center align-items-center">
-  <div class="register-card p-4 bg-white">
+<!-- src/app/auth/register/register.component.html -->
+<div class="register-wrapper d-flex flex-column align-items-center justify-content-center">
 
-    <h3 class="fw-bold mb-3 text-center">Crear cuenta</h3>
+  <div class="register-card bg-white p-4 p-md-5">
+
+    <h2 class="fw-bold text-center mb-2">Crear cuenta</h2>
+    <p class="text-muted text-center mb-4">
+      Regístrate para comprar tus pasajes en Transporte Miranda.
+    </p>
+
+    <!-- ERROR GLOBAL DEL BACKEND -->
+    <div *ngIf="errorMessage" class="alert alert-danger py-2">
+      {{ errorMessage }}
+    </div>
 
     <form [formGroup]="form" (ngSubmit)="registrar()">
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
+      <div class="row g-3">
+        <!-- NOMBRES -->
+        <div class="col-md-6">
           <label class="form-label">Nombres</label>
-          <input type="text" class="form-control" formControlName="nombres">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="nombres"
+            placeholder="Ej: Miguel Ángel"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('nombres')?.touched && form.get('nombres')?.invalid"
+          >
+            Los nombres son obligatorios.
+          </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <!-- APELLIDOS -->
+        <div class="col-md-6">
           <label class="form-label">Apellidos</label>
-          <input type="text" class="form-control" formControlName="apellidos">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="apellidos"
+            placeholder="Ej: Oyola"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('apellidos')?.touched && form.get('apellidos')?.invalid"
+          >
+            Los apellidos son obligatorios.
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-4 mb-3">
+        <!-- DNI -->
+        <div class="col-md-6">
           <label class="form-label">DNI</label>
-          <input type="text" class="form-control" formControlName="dni" placeholder="8 dígitos">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="dni"
+            placeholder="8 dígitos"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('dni')?.touched && form.get('dni')?.invalid"
+          >
+            <span *ngIf="form.get('dni')?.errors?.['required']">
+              El DNI es obligatorio.
+            </span>
+            <span *ngIf="form.get('dni')?.errors?.['pattern']">
+              El DNI debe tener 8 dígitos numéricos.
+            </span>
+          </div>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <!-- TELÉFONO -->
+        <div class="col-md-6">
           <label class="form-label">Teléfono</label>
-          <input type="text" class="form-control" formControlName="telefono" placeholder="9 dígitos">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="telefono"
+            placeholder="9 dígitos"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('telefono')?.touched && form.get('telefono')?.invalid"
+          >
+            <span *ngIf="form.get('telefono')?.errors?.['required']">
+              El teléfono es obligatorio.
+            </span>
+            <span *ngIf="form.get('telefono')?.errors?.['pattern']">
+              El teléfono debe tener 9 dígitos numéricos.
+            </span>
+          </div>
         </div>
 
-        <div class="col-md-4 mb-3">
+        <!-- CORREO -->
+        <div class="col-md-6">
           <label class="form-label">Correo</label>
-          <input type="email" class="form-control" formControlName="email">
+          <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="ejemplo@correo.com"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
+          >
+            <span *ngIf="form.get('email')?.errors?.['required']">
+              El correo es obligatorio.
+            </span>
+            <span *ngIf="form.get('email')?.errors?.['email']">
+              Ingresa un correo válido.
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
+        <!-- CONTRASEÑA -->
+        <div class="col-md-6">
           <label class="form-label">Contraseña</label>
-          <input type="password" class="form-control" formControlName="password">
+          <input
+            type="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Mínimo 6 caracteres"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+          >
+            <span *ngIf="form.get('password')?.errors?.['required']">
+              La contraseña es obligatoria.
+            </span>
+            <span *ngIf="form.get('password')?.errors?.['minlength']">
+              Debe tener al menos 6 caracteres.
+            </span>
+          </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <!-- CONFIRMAR CONTRASEÑA -->
+        <div class="col-md-6">
           <label class="form-label">Repetir contraseña</label>
-          <input type="password" class="form-control" formControlName="confirmPassword">
+          <input
+            type="password"
+            class="form-control"
+            formControlName="confirmPassword"
+            placeholder="Repite la contraseña"
+          />
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('confirmPassword')?.touched"
+          >
+            <span *ngIf="form.get('confirmPassword')?.errors?.['required']">
+              Debes confirmar la contraseña.
+            </span>
+            <span *ngIf="form.value.password && form.value.confirmPassword && form.value.password !== form.value.confirmPassword">
+              Las contraseñas no coinciden.
+            </span>
+          </div>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
-        {{ loading ? 'Registrando...' : 'Registrarme' }}
+      <!-- BOTÓN -->
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mt-4"
+        [disabled]="loading || form.invalid"
+      >
+        <ng-container *ngIf="!loading; else loadingTpl">
+          Registrarme
+        </ng-container>
+        <ng-template #loadingTpl>
+          Registrando...
+        </ng-template>
       </button>
-
-      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-        {{ errorMessage }}
-      </div>
-
-      <div class="text-center mt-3">
-        <span class="text-muted">¿Ya tienes cuenta?</span>
-        <a class="ms-1" [routerLink]="['/auth']">Iniciar sesión</a>
-      </div>
-
     </form>
+
+    <div class="text-center mt-3">
+      <span class="text-muted">¿Ya tienes cuenta?</span>
+      <a class="ms-1" routerLink="/auth">Iniciar sesión</a>
+    </div>
 
   </div>
 </div>

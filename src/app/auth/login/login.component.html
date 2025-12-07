@@ -1,3 +1,4 @@
+<!-- src/app/auth/login/login.component.html -->
 <div class="login-wrapper d-flex flex-column align-items-center justify-content-center">
 
   <!-- TÍTULO SUPERIOR -->
@@ -22,8 +23,14 @@
         Ingresa con tu correo y contraseña para gestionar tus viajes.
       </p>
 
+      <!-- ERROR GLOBAL (respuesta del backend) -->
+      <div *ngIf="errorMessage" class="alert alert-danger py-2">
+        {{ errorMessage }}
+      </div>
+
       <form [formGroup]="form" (ngSubmit)="login()">
 
+        <!-- CORREO -->
         <div class="mb-3">
           <label class="form-label">Correo electrónico</label>
           <input
@@ -32,9 +39,22 @@
             formControlName="username"
             placeholder="ejemplo@correo.com"
           />
+          <!-- Mensajes de validación -->
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('username')?.touched && form.get('username')?.invalid"
+          >
+            <span *ngIf="form.get('username')?.errors?.['required']">
+              El correo es obligatorio.
+            </span>
+            <span *ngIf="form.get('username')?.errors?.['email']">
+              Ingresa un correo válido.
+            </span>
+          </div>
         </div>
 
-        <div class="mb-3">
+        <!-- CONTRASEÑA -->
+        <div class="mb-4">
           <label class="form-label">Contraseña</label>
           <input
             type="password"
@@ -42,22 +62,33 @@
             formControlName="password"
             placeholder="Ingresa tu contraseña"
           />
+          <!-- Mensajes de validación -->
+          <div
+            class="small text-danger mt-1"
+            *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+          >
+            <span *ngIf="form.get('password')?.errors?.['required']">
+              La contraseña es obligatoria.
+            </span>
+            <span *ngIf="form.get('password')?.errors?.['minlength']">
+              Debe tener al menos 6 caracteres.
+            </span>
+          </div>
         </div>
 
-        <!-- BOTÓN LOGIN -->
+        <!-- BOTÓN -->
         <button
           type="submit"
           class="btn btn-primary w-100 login-btn"
-          [disabled]="loading"
+          [disabled]="loading || form.invalid"
         >
-          {{ loading ? 'Ingresando...' : 'Ingresar' }}
+          <ng-container *ngIf="!loading; else loadingTpl">
+            Ingresar
+          </ng-container>
+          <ng-template #loadingTpl>
+            Procesando...
+          </ng-template>
         </button>
-
-        <!-- MENSAJE DE ERROR DEL BACKEND -->
-        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-          {{ errorMessage }}
-        </div>
-
       </form>
 
       <div class="text-center mt-3">
