@@ -1,1 +1,58 @@
-<p>mis-boletos works!</p>
+<!-- src/app/cliente/pages/mis-boletos/mis-boletos.component.html -->
+
+<div class="mis-boletos-wrapper">
+
+  <h2 class="mb-3">Mis boletos</h2>
+  <p class="text-muted mb-4">
+    Aquí puedes ver el historial de boletos comprados con tu cuenta.
+  </p>
+
+  <!-- Cargando -->
+  <div *ngIf="loading" class="alert alert-info">
+    Cargando tus boletos...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && errorMsg" class="alert alert-danger">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Sin boletos -->
+  <div *ngIf="!loading && !errorMsg && boletos.length === 0" class="alert alert-warning">
+    Aún no tienes boletos registrados. ¡Reserva tu primer viaje desde la opción "Buscar viajes"! 🚍
+  </div>
+
+  <!-- Tabla de boletos -->
+  <div *ngIf="!loading && !errorMsg && boletos.length > 0" class="table-responsive shadow-sm rounded">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-primary">
+        <tr>
+          <th># Boleto</th>
+          <th>Fecha de compra</th>
+          <th>ID Viaje</th>
+          <th>Monto total (S/)</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of boletos">
+          <td>{{ b.id }}</td>
+          <td>{{ b.fechaCompra | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ b.viajeId }}</td>
+          <td>{{ b.montoTotal | number:'1.2-2' }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': b.estado === 'PAGADO',
+                'bg-secondary': b.estado !== 'PAGADO'
+              }">
+              {{ b.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
