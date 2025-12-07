@@ -1,9 +1,8 @@
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
-// Guard de autenticación (funcional)
+// Guards
 import { authGuard } from './auth/auth.guard';
-
-// Guard de rol (clase)
 import { RoleGuard } from './core/guards/role.guard';
 
 // Dashboards

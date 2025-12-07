@@ -1,15 +1,17 @@
+// src/app/auth/auth.guard.ts
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from './auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
+export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
 
-  if (authService.isLoggedIn()) {
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    // Usuario autenticado
     return true;
   }
 
-  // Si no está logueado, mandarlo al login
-  return router.createUrlTree(['/auth']);
+  // No autenticado → enviar a login
+  return router.parseUrl('/auth');
 };
