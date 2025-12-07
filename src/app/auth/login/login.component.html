@@ -1,32 +1,40 @@
-<!-- src/app/auth/login/login.component.html -->
-<div class="login-wrapper d-flex justify-content-center align-items-center">
+<div class="login-wrapper d-flex flex-column align-items-center justify-content-center">
+
+  <!-- TÍTULO SUPERIOR -->
+  <div class="login-header text-center mb-4">
+    <h1 class="app-title">Transporte Miranda</h1>
+    <p class="app-subtitle">Viaja cómodo, seguro y al mejor precio.</p>
+  </div>
+
+  <!-- TARJETA PRINCIPAL -->
   <div class="login-card d-flex">
 
-    <!-- Lado izquierdo (bienvenida) -->
-    <div class="login-left text-white d-flex flex-column justify-content-center p-4">
-      <h1 class="fw-bold mb-3">Hello, welcome!</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-
-      <button class="btn btn-light mt-3">View more</button>
+    <!-- LADO IZQUIERDO: IMAGEN DEL BUS -->
+    <div class="login-left">
+      <div class="login-left-overlay"></div>
     </div>
 
-    <!-- Lado derecho (formulario) -->
-    <div class="login-right bg-white p-4">
+    <!-- LADO DERECHO: FORMULARIO -->
+    <div class="login-right bg-white p-4 p-md-5">
 
-      <h4 class="fw-bold mb-3">Iniciar sesión</h4>
+      <h3 class="fw-bold mb-2">Iniciar sesión</h3>
+      <p class="text-muted mb-4">
+        Ingresa con tu correo y contraseña para gestionar tus viajes.
+      </p>
 
       <form [formGroup]="form" (ngSubmit)="login()">
+
         <div class="mb-3">
-          <label class="form-label">Usuario (correo)</label>
+          <label class="form-label">Correo electrónico</label>
           <input
-            type="text"
+            type="email"
             class="form-control"
             formControlName="username"
-            placeholder="Ingresa tu correo"
+            placeholder="ejemplo@correo.com"
           />
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
           <label class="form-label">Contraseña</label>
           <input
             type="password"
@@ -36,21 +44,16 @@
           />
         </div>
 
-        <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
-          {{ loading ? 'Ingresando...' : 'Login' }}
+        <button type="submit" class="btn btn-primary w-100 login-btn">
+          Ingresar
         </button>
-
-        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-          {{ errorMessage }}
-        </div>
       </form>
 
-      <div class="text-center mt-3">
+      <div class="text-center mt-4">
         <span class="text-muted">¿No tienes cuenta?</span>
-        <a class="ms-1" [routerLink]="['/auth/register']">Registrarse</a>
+        <a class="ms-1 register-link" href="#">Registrarse</a>
       </div>
 
     </div>
-
   </div>
 </div>

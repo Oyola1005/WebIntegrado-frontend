@@ -7,17 +7,22 @@ $miranda-bg-soft: #f4f6fb;
 
 /* HERO superior */
 .hero-bus {
-  background: $miranda-blue url('/assets/img/bus-miranda.jpg') center/cover no-repeat;
+  background: $miranda-blue;
   position: relative;
-  padding: 3.5rem 0 4.5rem;
+  padding: 4rem 0 4.5rem;
   color: #ffffff;
+
+  /* para centrar verticalmente el contenido del hero */
+  display: flex;
+  align-items: center;
 }
 
 .hero-overlay {
+  width: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(11, 59, 115, 0.9),
-    rgba(11, 59, 115, 0.8)
+    rgba(11, 59, 115, 0.96),
+    rgba(11, 59, 115, 0.9)
   );
   padding: 1.5rem 0 2rem;
 }
@@ -26,42 +31,18 @@ $miranda-bg-soft: #f4f6fb;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 1rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .hero-title {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-/* Tabs (Pasajes / Encomiendas) */
-.hero-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.hero-tabs .tab {
-  border-radius: 999px;
-  border: none;
-  padding: 0.4rem 1.5rem;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-.hero-tabs .tab.active {
-  background: #ffffff;
-  color: $miranda-blue;
-}
-
-.hero-tabs .tab.disabled {
-  opacity: 0.5;
-  cursor: default;
+  margin: 0;
 }
 
 /* Tarjeta de búsqueda */
@@ -302,7 +283,7 @@ $miranda-bg-soft: #f4f6fb;
   background: $miranda-accent;
 }
 
-/* Grid de asientos (sin tocar TS) */
+/* Grid de asientos */
 .seat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -339,36 +320,6 @@ $miranda-bg-soft: #f4f6fb;
   background: $miranda-accent;
 }
 
-/* Resumen de compra */
-.resumen-compra {
-  margin-top: 1rem;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-  .hero-bus {
-    padding: 2.5rem 0 3.5rem;
-  }
-
-  .search-card {
-    border-radius: 1.5rem;
-    padding: 1rem;
-  }
-
-  .search-button-wrapper {
-    flex: 1 1 100%;
-  }
-
-  .viaje-main {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .viaje-precio {
-    text-align: left;
-    align-items: flex-start;
-  }
-}
 /* Layout en 2 columnas */
 .compra-layout {
   display: flex;
@@ -414,5 +365,24 @@ $miranda-bg-soft: #f4f6fb;
 @media (max-width: 900px) {
   .compra-layout {
     flex-direction: column;
+  }
+
+  .search-card {
+    border-radius: 1.5rem;
+    padding: 1rem;
+  }
+
+  .search-button-wrapper {
+    flex: 1 1 100%;
+  }
+
+  .viaje-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .viaje-precio {
+    text-align: left;
+    align-items: flex-start;
   }
 }

@@ -1,87 +1,141 @@
-/* Contenedor centrado */
+/* CONTENEDOR GENERAL */
 .login-wrapper {
-    height: 100vh;
-    background: linear-gradient(135deg, #7b42f6, #b01eff);
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  /* Card general */
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  /* 🔵 Fondo azul degradado, limpio y moderno */
+  background: linear-gradient(
+    135deg,
+    #0d47a1 0%,   /* azul oscuro */
+    #1565c0 40%,  /* azul intermedio */
+    #1e88e5 100%  /* azul vivo tipo botón */
+  );
+}
+
+/* TÍTULO SUPERIOR */
+.login-header {
+  color: #eaf2ff;
+  margin-bottom: 1.5rem;
+}
+
+.app-title {
+  font-weight: 800;
+  font-size: 2.1rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.app-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* TARJETA PRINCIPAL */
+.login-card {
+  width: 100%;
+  max-width: 980px;
+  min-height: 420px;
+
+  background: #ffffff;
+  border-radius: 1.75rem;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: row;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(6px);
+}
+
+/* LADO IZQUIERDO (IMAGEN) */
+.login-left {
+  position: relative;
+  flex: 1.1;
+  min-height: 420px;
+
+  background-image: url("https://scontent.ftru2-2.fna.fbcdn.net/v/t39.30808-6/489956529_122122143620657006_271755437333278311_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeEryTmlKURyCKL6H-7NJTcA-3iLgifHc_r7eIuCJ8dz-pBXEQQ6AfuzL-3SYLHtQOo8uVg002COYY8t0zMrHdm5&_nc_ohc=RFJgbRdrqOMQ7kNvwECtKeU&_nc_oc=AdlEVYwAq0URtbO4KezbZcRprCRadgMxRymxrk-DB0Wn5KglkIKK_Hiwmr6ACq1t3wmADr1PUoyqG3xOKfw-4UVD&_nc_zt=23&_nc_ht=scontent.ftru2-2.fna&_nc_gid=CmOg1UXnZGSemDj6a2UnGQ&oh=00_AfkI9bz2x5YHEjtiNisBwZvaNUriZ17DV1oJEAHmYb9UVQ&oe=6939AF38");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Suave oscurecido para que la imagen no compita con el formulario */
+.login-left-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.05)
+  );
+}
+
+/* LADO DERECHO (FORMULARIO) */
+.login-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-right h3 {
+  color: #0f172a;
+}
+
+.login-right p {
+  font-size: 0.95rem;
+}
+
+/* BOTÓN PRINCIPAL */
+.login-btn {
+  background: #0069ff;
+  border-color: #0069ff;
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-size: 0.98rem;
+}
+
+.login-btn:hover {
+  background: #0052cc;
+  border-color: #0052cc;
+}
+
+/* LINK REGISTRO */
+.register-link {
+  color: #0069ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
   .login-card {
-    width: 900px;
-    max-width: 100%;
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    display: flex;
-  }
-  
-  /* Panel izquierdo */
-  .login-left {
-    width: 45%;
-    position: relative;
-    border-radius: 18px 0 0 18px;
-  
-    /* Fondo mejorado: imagen + gradiente suave */
-    background:
-      linear-gradient(to bottom right, rgba(10, 15, 37, 0.8), rgba(26, 39, 64, 0.9)),
-      url('https://images.unsplash.com/photo-1503265192941-1a17b85e2b74?auto=format&fit=crop&w=900&q=60')
-      center/cover no-repeat;
-  
-    padding: 40px;
-    display: flex;
     flex-direction: column;
-    color: white;
+    max-width: 530px;
   }
-  
-  /* Oscurecer imagen izquierda */
-  .login-left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: inherit;
-    z-index: 1;
+
+  .login-left {
+    min-height: 220px;
   }
-  
-  .login-left * {
-    position: relative;
-    z-index: 2;
-  }
-  
-  /* Panel derecho */
+
   .login-right {
-    width: 55%;
-    padding: 40px;
-    background: white;
-    border-left: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 0 18px 18px 0;
+    padding: 1.75rem !important;
   }
-  
-  /* Botón principal */
-  button.btn-primary {
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    border: none;
-    font-weight: 600;
+
+  .app-title {
+    font-size: 1.7rem;
   }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .login-card {
-      flex-direction: column;
-    }
-  
-    .login-left,
-    .login-right {
-      width: 100%;
-      border-radius: 18px;
-    }
-  
-    .login-left::before {
-      border-radius: 18px;
-    }
-  }
-  
+}
