@@ -4,8 +4,12 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
+
+// Interceptor que agrega el token JWT
 import { authTokenInterceptor } from './auth/auth-token.interceptor';
-// (Cuando lo agreguemos) import { errorInterceptor } from './core/interceptors/error.interceptor';
+
+// Interceptor global que maneja errores (401, etc.)
+import { errorHttpInterceptor } from './core/interceptors/error-http.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,8 +19,8 @@ export const appConfig: ApplicationConfig = {
     // HttpClient + interceptores
     provideHttpClient(
       withInterceptors([
-        authTokenInterceptor,
-        // errorInterceptor   <-- lo activarás cuando lo creemos
+        authTokenInterceptor,   // agrega el token
+        errorHttpInterceptor    // maneja errores HTTP globalmente
       ])
     )
   ]
