@@ -34,7 +34,7 @@
           />
         </div>
 
-        <div class="mb-4">
+        <div class="mb-3">
           <label class="form-label">Contraseña</label>
           <input
             type="password"
@@ -44,17 +44,26 @@
           />
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 login-btn">
-          Ingresar
+        <!-- BOTÓN LOGIN -->
+        <button
+          type="submit"
+          class="btn btn-primary w-100 login-btn"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Ingresando...' : 'Ingresar' }}
         </button>
+
+        <!-- MENSAJE DE ERROR DEL BACKEND -->
+        <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+          {{ errorMessage }}
+        </div>
+
       </form>
 
       <div class="text-center mt-3">
         <span class="text-muted">¿No tienes cuenta?</span>
-        <!-- IMPORTANTE: usar routerLink, NO href="#" -->
         <a class="ms-1" routerLink="/auth/register">Registrarse</a>
       </div>
-
 
     </div>
   </div>

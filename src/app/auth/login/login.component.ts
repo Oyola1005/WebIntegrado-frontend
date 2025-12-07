@@ -1,14 +1,23 @@
 // src/app/auth/login/login.component.ts
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';   // 👈 IMPORTANTE para *ngIf
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,          // 👈 aquí habilitamos *ngIf, *ngFor, etc.
+    ReactiveFormsModule,
+    RouterModule
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -55,9 +64,10 @@ export class LoginComponent {
           this.router.navigate(['/cliente']);
         }
       },
-
       error: (err) => {
         this.loading = false;
+
+        console.error('Error en login:', err); // 👈 para ver en consola
 
         const backendMsg =
           err?.error?.message ||
