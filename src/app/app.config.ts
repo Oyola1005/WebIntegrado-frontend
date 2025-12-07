@@ -5,14 +5,19 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { authTokenInterceptor } from './auth/auth-token.interceptor';
+// (Cuando lo agreguemos) import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    // Registramos HttpClient + interceptor JWT
+
+    // HttpClient + interceptores
     provideHttpClient(
-      withInterceptors([authTokenInterceptor])
+      withInterceptors([
+        authTokenInterceptor,
+        // errorInterceptor   <-- lo activarás cuando lo creemos
+      ])
     )
   ]
 };

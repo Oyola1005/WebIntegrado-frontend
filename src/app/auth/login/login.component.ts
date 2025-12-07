@@ -48,17 +48,23 @@ export class LoginComponent {
       next: (res) => {
         this.loading = false;
 
+        // Navegación por rol
         if (res.rol === 'ADMIN') {
           this.router.navigate(['/admin']);
-        } else if (res.rol === 'CLIENTE') {
-          this.router.navigate(['/cliente']);
         } else {
-          this.router.navigate(['/auth']);
+          this.router.navigate(['/cliente']);
         }
       },
-      error: () => {
+
+      error: (err) => {
         this.loading = false;
-        this.errorMessage = 'Usuario o contraseña incorrectos';
+
+        const backendMsg =
+          err?.error?.message ||
+          err?.error?.error ||
+          'Usuario o contraseña incorrectos';
+
+        this.errorMessage = backendMsg;
       }
     });
   }

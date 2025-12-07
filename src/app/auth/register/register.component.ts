@@ -1,3 +1,4 @@
+// src/app/auth/register/register.component.ts
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -60,7 +61,6 @@ export class RegisterComponent {
       next: (res) => {
         this.loading = false;
 
-        // Después de registrarse ya está logueado
         if (res.rol === 'ADMIN') {
           this.router.navigate(['/admin']);
         } else {
@@ -71,7 +71,6 @@ export class RegisterComponent {
         this.loading = false;
         console.error('Error en registro:', err);
 
-        // ⬇⬇ Mostrar el mensaje real del backend si viene
         const backendMsg =
           err?.error?.message ||
           err?.error?.error ||
