@@ -1,1 +1,79 @@
-<p>perfil-pasajero works!</p>
+<div class="perfil-container">
+  <h2 class="mb-3">Mi perfil</h2>
+  <p class="text-muted mb-4">
+    Revisa y actualiza tus datos personales como pasajero.
+  </p>
+
+  <div *ngIf="loading" class="alert alert-info">
+    Cargando información...
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div class="card shadow-sm" *ngIf="!loading">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="guardarCambios()">
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombres</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nombres"
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Apellidos</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="apellidos"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">DNI</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="dni"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Correo electrónico</label>
+            <input
+              type="email"
+              class="form-control"
+              formControlName="email"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Celular</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="telefono"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-success mt-4"
+          [disabled]="loading">
+          Guardar cambios
+        </button>
+
+        <div *ngIf="successMessage" class="alert alert-success mt-3">
+          {{ successMessage }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

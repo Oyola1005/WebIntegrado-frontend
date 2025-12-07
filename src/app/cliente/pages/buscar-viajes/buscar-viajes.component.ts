@@ -85,16 +85,17 @@ export class BuscarViajesComponent implements OnInit {
   }
 
   private cargarPasajeroActual(): void {
-    this.pasajeroService.getPerfilActual().subscribe({
-      next: (p: Pasajero) => {
-        this.pasajeroActual = p;
-      },
-      error: (err) => {
-        console.error('No se pudo cargar el pasajero actual', err);
-        // Si falla, simplemente no autocompletamos
-      }
-    });
-  }
+  this.pasajeroService.getPerfilActual().subscribe({
+    next: (p: Pasajero) => {
+      this.pasajeroActual = p;
+    },
+    error: (err: any) => {
+      console.error('No se pudo cargar el pasajero actual', err);
+      // Si falla, simplemente no autocompletamos
+    }
+  });
+}
+
 
   // ==========================
   // BUSCAR VIAJES

@@ -13,11 +13,14 @@ export class PasajeroService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * El backend debe tener:
-   * GET /api/pasajeros/perfil  -> usa el email del JWT (Authentication.getName())
-   */
+  /** Obtiene los datos del pasajero asociado al usuario logueado */
   getPerfilActual(): Observable<Pasajero> {
-    return this.http.get<Pasajero>(`${this.apiUrl}/perfil`);
+    // Debe existir en el backend un endpoint GET /api/pasajeros/me
+    return this.http.get<Pasajero>(`${this.apiUrl}/me`);
+  }
+
+  /** Actualiza el perfil del pasajero */
+  actualizarPerfil(pasajero: Pasajero): Observable<Pasajero> {
+    return this.http.put<Pasajero>(`${this.apiUrl}/${pasajero.id}`, pasajero);
   }
 }
