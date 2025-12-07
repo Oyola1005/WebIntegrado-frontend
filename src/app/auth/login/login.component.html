@@ -49,10 +49,12 @@
         </button>
       </form>
 
-      <div class="text-center mt-4">
+      <div class="text-center mt-3">
         <span class="text-muted">¿No tienes cuenta?</span>
-        <a class="ms-1 register-link" href="#">Registrarse</a>
+        <!-- IMPORTANTE: usar routerLink, NO href="#" -->
+        <a class="ms-1" routerLink="/auth/register">Registrarse</a>
       </div>
+
 
     </div>
   </div>

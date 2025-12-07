@@ -60,7 +60,7 @@ export class RegisterComponent {
       next: (res) => {
         this.loading = false;
 
-        // Después de registrarse ya está logeado con rol CLIENTE
+        // Después de registrarse ya está logueado
         if (res.rol === 'ADMIN') {
           this.router.navigate(['/admin']);
         } else {
@@ -69,8 +69,15 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        console.error(err);
-        this.errorMessage = 'No se pudo completar el registro. Intenta con otro correo o revisa los datos.';
+        console.error('Error en registro:', err);
+
+        // ⬇⬇ Mostrar el mensaje real del backend si viene
+        const backendMsg =
+          err?.error?.message ||
+          err?.error?.error ||
+          'No se pudo completar el registro. Intenta con otro correo o revisa los datos.';
+
+        this.errorMessage = backendMsg;
       }
     });
   }

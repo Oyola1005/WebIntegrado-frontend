@@ -1,16 +1,28 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-primary px-3">
-  <span class="navbar-brand text-white fw-bold">
-    Hola {{ userName }} 👋
-  </span>
+<nav class="navbar navbar-expand-lg navbar-light nav-cliente px-3">
+  <div class="container-fluid">
+    <!-- LOGO EMPRESA -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img
+        src="assets/img/logo-tim.png"
+        alt="Transporte Interprovincial Miranda"
+        class="logo-tim me-2"
+      />
+    </a>
 
-
-  <div class="ms-auto d-flex gap-2">
-    <a routerLink="/cliente/buscar" class="btn btn-outline-light btn-sm">Buscar viajes</a>
-    <a routerLink="/cliente/mis-boletos" class="btn btn-outline-light btn-sm">Mis boletos</a>
-    <a routerLink="/cliente/perfil" class="btn btn-outline-light btn-sm">Mi perfil</a>
-    <button class="btn btn-danger btn-sm" routerLink="/auth">Salir</button>
+    <!-- BOTONES DERECHA -->
+    <div class="ms-auto d-flex gap-2">
+      <a routerLink="/cliente/buscar" class="btn btn-outline-light btn-sm">Buscar viajes</a>
+      <a routerLink="/cliente/mis-boletos" class="btn btn-outline-light btn-sm">Mis boletos</a>
+      <a routerLink="/cliente/perfil" class="btn btn-outline-light btn-sm">Mi perfil</a>
+      <button class="btn btn-danger btn-sm" routerLink="/auth">Salir</button>
+    </div>
   </div>
 </nav>
+
+<!-- SALUDO CENTRADO FUERA DEL NAVBAR -->
+<div class="cliente-greeting">
+  Hola <strong>{{ userName }}</strong> 👋
+</div>
 
 <div class="container mt-4">
   <router-outlet></router-outlet>
