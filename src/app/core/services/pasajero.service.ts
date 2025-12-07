@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pasajero } from '../models/pasajero.model';
+import { ActualizarPerfilRequest } from '../models/actualizar-perfil-request.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +16,13 @@ export class PasajeroService {
 
   /** Obtiene los datos del pasajero asociado al usuario logueado */
   getPerfilActual(): Observable<Pasajero> {
-    // Debe existir en el backend un endpoint GET /api/pasajeros/me
+    // Backend: GET /api/pasajeros/me
     return this.http.get<Pasajero>(`${this.apiUrl}/me`);
   }
 
-  /** Actualiza el perfil del pasajero */
-  actualizarPerfil(pasajero: Pasajero): Observable<Pasajero> {
-    return this.http.put<Pasajero>(`${this.apiUrl}/${pasajero.id}`, pasajero);
+  /** Actualiza el perfil del pasajero logueado */
+  actualizarPerfil(req: ActualizarPerfilRequest): Observable<Pasajero> {
+    // Backend: PUT /api/pasajeros/me
+    return this.http.put<Pasajero>(`${this.apiUrl}/me`, req);
   }
 }
