@@ -31,76 +31,93 @@ export class PerfilPasajeroComponent implements OnInit {
   pasajeroActual: Pasajero | null = null;
 
   ngOnInit(): void {
+  const token = localStorage.getItem('token');
+  if (token) {
     this.cargarPerfil();
   }
+}
+
 
   private cargarPerfil(): void {
-    this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+  this.loading = true;
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    this.pasajeroService.getPerfilActual().subscribe({
-      next: (data: Pasajero) => {
-        this.pasajeroActual = data;
-
-        this.form.patchValue({
-          nombres: data.nombres,
-          apellidos: data.apellidos,
-          dni: data.dni,
-          email: data.email,
-          telefono: data.telefono
-        });
-
+  this.pasajeroService.getPerfilActual().subscribe({
+    next: (data) => {
+      // Si el servicio devolvió null (no hay token), no mostrar error
+      if (!data) {
         this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('No se pudo cargar el perfil', err);
-        this.loading = false;
-        this.errorMessage = 'No se pudo cargar tu perfil. Intenta nuevamente más tarde.';
+        return;
       }
-    });
-  }
+
+      this.pasajeroActual = data;
+
+      this.form.patchValue({
+        nombres: data.nombres,
+        apellidos: data.apellidos,
+        dni: data.dni,
+        email: data.email,
+        telefono: data.telefono
+      });
+
+      this.loading = false;
+    },
+    error: (err: any) => {
+      console.error('No se pudo cargar el perfil', err);
+      this.loading = false;
+      this.errorMessage = 'No se pudo cargar tu perfil. Intenta nuevamente más tarde.';
+    }
+  });
+}
+
 
   guardarCambios(): void {
-    if (this.form.invalid || !this.pasajeroActual) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const raw = this.form.getRawValue(); // incluye campos disabled
-
-    // Solo enviamos lo que el backend espera en PUT /me
-    const payload: ActualizarPerfilRequest = {
-      nombres: raw.nombres,
-      apellidos: raw.apellidos,
-      telefono: raw.telefono
-    };
-
-    this.loading = true;
-    this.successMessage = '';
-    this.errorMessage = '';
-
-    this.pasajeroService.actualizarPerfil(payload).subscribe({
-      next: (updated: Pasajero) => {
-        this.loading = false;
-        this.successMessage = 'Tus datos se actualizaron correctamente.';
-        this.pasajeroActual = updated;
-
-        // Actualizamos el formulario con la respuesta real del backend
-        this.form.patchValue({
-          nombres: updated.nombres,
-          apellidos: updated.apellidos,
-          dni: updated.dni,
-          email: updated.email,
-          telefono: updated.telefono
-        });
-      },
-      error: (err: any) => {
-        console.error('Error al actualizar perfil', err);
-        this.loading = false;
-        this.errorMessage =
-          'No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo.';
-      }
-    });
+  if (this.form.invalid || !this.pasajeroActual) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  const raw = this.form.getRawValue(); // incluye campos disabled
+
+  const payload: ActualizarPerfilRequest = {
+    nombres: raw.nombres,
+    apellidos: raw.apellidos,
+    telefono: raw.telefono
+  };
+
+  this.loading = true;
+  this.successMessage = '';
+  this.errorMessage = '';
+
+  this.pasajeroService.actualizarPerfil(payload).subscribe({
+    next: (updated) => {
+      // puede venir null si no hay token o algo raro
+      if (!updated) {
+        this.loading = false;
+        this.errorMessage = 'No se pudo actualizar tu perfil. Vuelve a iniciar sesión.';
+        return;
+      }
+
+      this.loading = false;
+      this.successMessage = 'Tus datos se actualizaron correctamente.';
+      this.pasajeroActual = updated;
+
+      this.form.patchValue({
+        nombres: updated.nombres,
+        apellidos: updated.apellidos,
+        dni: updated.dni,
+        email: updated.email,
+        telefono: updated.telefono
+      });
+    },
+    error: (err: any) => {
+      console.error('Error al actualizar perfil', err);
+      this.loading = false;
+      this.errorMessage =
+        'No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo.';
+    }
+  });
+}
+
 }

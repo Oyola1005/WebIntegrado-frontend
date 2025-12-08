@@ -1,1 +1,66 @@
-<p>gestionar-boletos works!</p>
+<div class="admin-content">
+
+  <h2 class="mb-3 fw-bold">Gestión de Boletos</h2>
+
+  <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+  <button class="btn btn-outline-primary mb-3" (click)="cargarBoletos()">
+    Actualizar
+  </button>
+
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Viaje ID</th>
+            <th>Pasajero ID</th>
+            <th>Fecha de compra</th>
+            <th>Monto total</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let b of boletos">
+            <td>{{ b.id }}</td>
+            <td>{{ b.viajeId }}</td>
+            <td>{{ b.pasajeroId }}</td>
+            <td>{{ b.fechaCompra | date:'short' }}</td>
+            <td>S/ {{ b.montoTotal | number:'1.2-2' }}</td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': b.estado === 'PAGADO',
+                  'bg-secondary': b.estado === 'RESERVADO',
+                  'bg-danger': b.estado === 'CANCELADO'
+                }"
+              >
+                {{ b.estado }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="cancelar(b)"
+                [disabled]="b.estado === 'CANCELADO'"
+              >
+                Cancelar
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="!boletos.length && !loading">
+            <td colspan="7" class="text-center text-muted py-4">
+              No hay boletos emitidos aún.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

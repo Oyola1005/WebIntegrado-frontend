@@ -30,7 +30,10 @@ export class AuthService {
 
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/api/auth';
-  private storageKey = 'auth'; // lo que guardamos en localStorage
+
+  // claves en localStorage
+  private storageKey = 'auth';   // objeto completo { token, rol, nombreMostrado }
+  private tokenKey   = 'token';  // solo el token en texto plano
 
   // ============ LOGIN ============
   login(req: LoginRequest): Observable<AuthResponse> {
@@ -48,11 +51,15 @@ export class AuthService {
 
   // ============ MÉTODOS DE SESIÓN ============
   private saveAuth(res: AuthResponse): void {
+    // guardamos el objeto completo
     localStorage.setItem(this.storageKey, JSON.stringify(res));
+    // y también el token plano (para el interceptor)
+    localStorage.setItem(this.tokenKey, res.token);
   }
 
   logout(): void {
     localStorage.removeItem(this.storageKey);
+    localStorage.removeItem(this.tokenKey);
   }
 
   private getAuthData(): AuthResponse | null {
@@ -66,6 +73,11 @@ export class AuthService {
   }
 
   getToken(): string | null {
+    // primero intentamos leer el token plano
+    const direct = localStorage.getItem(this.tokenKey);
+    if (direct) return direct;
+
+    // fallback: leer desde el objeto auth
     return this.getAuthData()?.token ?? null;
   }
 

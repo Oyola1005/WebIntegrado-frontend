@@ -81,21 +81,27 @@ export class BuscarViajesComponent implements OnInit {
   // CICLO DE VIDA
   // ==========================
   ngOnInit(): void {
-    this.cargarPasajeroActual();
+    // 👇 SOLO intentamos cargar el pasajero si ya hay token
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.cargarPasajeroActual();
+    }
   }
 
   private cargarPasajeroActual(): void {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
   this.pasajeroService.getPerfilActual().subscribe({
-    next: (p: Pasajero) => {
+    next: (p: Pasajero | null) => {
+      if (!p) return;
       this.pasajeroActual = p;
     },
     error: (err: any) => {
       console.error('No se pudo cargar el pasajero actual', err);
-      // Si falla, simplemente no autocompletamos
     }
   });
 }
-
 
   // ==========================
   // BUSCAR VIAJES
@@ -123,7 +129,6 @@ export class BuscarViajesComponent implements OnInit {
     this.mostrarFormularioPasajeros = false;
     this.pasajerosArray.clear();
 
-    // enviamos fechaIda (puede ser null)
     this.viajeService.buscarPorRuta(origen, destino, fechaIda).subscribe({
       next: (data: Viaje[]) => {
         this.resultados = data;
@@ -172,7 +177,6 @@ export class BuscarViajesComponent implements OnInit {
       this.totalAPagar = 0;
     }
 
-    // reconstruimos formularios cada vez que cambia la selección
     this.construirFormularioPasajeros();
   }
 
@@ -187,7 +191,6 @@ export class BuscarViajesComponent implements OnInit {
     }
 
     this.selectedSeats.forEach((seat, index) => {
-      // valores por defecto (vacíos)
       let nombres = '';
       let apellidos = '';
       let dni = '';
@@ -218,10 +221,7 @@ export class BuscarViajesComponent implements OnInit {
     this.mostrarFormularioPasajeros = this.selectedSeats.length > 0;
   }
 
-  // ==========================
-  // PASO 1: Mostrar formulario pasajeros
-  // (botón "Confirmar compra" del resumen)
-  // ==========================
+  // Paso 1: mostrar formulario
   confirmarCompra(): void {
     if (!this.selectedViaje) {
       this.compraError = 'Debes seleccionar un viaje.';
@@ -237,15 +237,10 @@ export class BuscarViajesComponent implements OnInit {
 
     this.compraError = '';
     this.compraMsg = '';
-
-    // Ya se construye en onSeatToggle, aquí solo aseguramos que esté visible
     this.mostrarFormularioPasajeros = true;
   }
 
-  // ==========================
-  // PASO 2: Enviar compra al backend
-  // (botón "Finalizar compra" del formulario)
-  // ==========================
+  // Paso 2: enviar compra
   finalizarCompra(): void {
     if (!this.selectedViaje) {
       return;
@@ -258,8 +253,6 @@ export class BuscarViajesComponent implements OnInit {
 
     const payload: CompraBoletoRequest = {
       viajeId: this.selectedViaje.id!
-      // si luego decides mandar datos de pasajeros,
-      // aquí se ampliaría el payload
     };
 
     const peticiones = this.selectedSeats.map(() =>
@@ -274,7 +267,7 @@ export class BuscarViajesComponent implements OnInit {
       next: (resArr: any[]) => {
         this.compraMsg = `Se compraron ${resArr.length} boleto(s) correctamente.`;
         this.loading = false;
-        this.buscar(); // recargar viajes y asientos
+        this.buscar(); // recargar viajes
         this.mostrarFormularioPasajeros = false;
       },
       error: (err: any) => {

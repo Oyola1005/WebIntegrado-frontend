@@ -1,7 +1,7 @@
 // src/app/core/services/boleto.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CompraBoletoRequest } from '../models/compra-boleto.model';
 import { Boleto } from '../models/boleto.model';
 
@@ -14,14 +14,26 @@ export class BoletoService {
 
   constructor(private http: HttpClient) {}
 
-  // Comprar boleto para el usuario logueado
-  comprar(req: CompraBoletoRequest): Observable<Boleto> {
-    // El backend toma el pasajero desde el usuario logueado (JWT)
+  /** CLIENTE: comprar boleto */
+  comprar(req: CompraBoletoRequest): Observable<Boleto | null> {
+    const token = localStorage.getItem('token');
+    if (!token) return of(null);
     return this.http.post<Boleto>(`${this.apiUrl}/comprar`, req);
   }
 
-  // 👇 NUEVO: obtener los boletos del usuario logueado
+  /** CLIENTE: obtener boletos del usuario */
   obtenerMisBoletos(): Observable<Boleto[]> {
+    const token = localStorage.getItem('token');
+    if (!token) return of([]); // evita error al entrar al login
     return this.http.get<Boleto[]>(`${this.apiUrl}/mis-boletos`);
+  }
+
+  /** ADMIN */
+  obtenerTodos(): Observable<Boleto[]> {
+    return this.http.get<Boleto[]>(this.apiUrl);
+  }
+
+  cancelar(id: number): Observable<Boleto> {
+    return this.http.put<Boleto>(`${this.apiUrl}/${id}/cancelar`, {});
   }
 }

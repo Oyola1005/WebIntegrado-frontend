@@ -1,0 +1,197 @@
+// Paleta TIM / Transportes Miranda
+$tim-primary: #0d6efd;      // azul principal
+$tim-primary-soft: #4dabff; // azul suave
+$tim-secondary: #00c2ff;    // celeste
+$tim-accent: #ff4d4d;       // rojo botones/destruir
+$tim-bg-soft: #f5f7fb;      // fondo claro
+$tim-border: #e2e8f0;
+$tim-text-main: #1f2933;
+$tim-text-muted: #6b7280;
+
+:host {
+  display: block;
+  min-height: calc(100vh - 80px);
+  background: $tim-bg-soft;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.admin-content {
+  max-width: 1120px;
+  margin: 1.5rem auto 2.5rem;
+  padding: 1.5rem 1.75rem 2.5rem;
+}
+
+/* Título de sección */
+h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: $tim-text-main;
+  margin-bottom: 1rem;
+}
+
+/* Alertas */
+.alert {
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+
+  &.alert-danger {
+    border: 1px solid rgba($tim-accent, 0.18);
+    background: rgba($tim-accent, 0.05);
+    color: #b91c1c;
+  }
+}
+
+/* Fila filtro/botón actualizar (la que tiene el input + botón) */
+.d-flex.justify-content-between.mb-3 {
+  gap: 0.75rem;
+  align-items: center;
+
+  .form-control {
+    border-radius: 999px;
+    border-color: $tim-border;
+    font-size: 0.9rem;
+    padding-inline: 1rem;
+
+    &:focus {
+      box-shadow: 0 0 0 0.15rem rgba($tim-primary, 0.15);
+      border-color: $tim-primary-soft;
+    }
+  }
+
+  .btn-outline-primary {
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-color: rgba($tim-primary, 0.5);
+    color: $tim-primary;
+
+    &:hover {
+      background: linear-gradient(135deg, $tim-primary, $tim-secondary);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba($tim-primary, 0.25);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+  }
+}
+
+/* CARD + TABLA */
+.card {
+  border-radius: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+/* Quitar espacio extra de tabla dentro de la card */
+.table {
+  margin-bottom: 0;
+
+  thead {
+    background: linear-gradient(90deg, #eef3ff, #f6fbff);
+
+    th {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      color: $tim-text-muted;
+      border-color: $tim-border;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+  }
+
+  tbody {
+    td {
+      font-size: 0.9rem;
+      color: $tim-text-main;
+      border-color: rgba(148, 163, 184, 0.35);
+      vertical-align: middle;
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+    }
+
+    tr {
+      transition: background-color 0.18s ease, transform 0.18s ease,
+        box-shadow 0.18s ease;
+
+      &:hover {
+        background: rgba($tim-primary, 0.03);
+      }
+    }
+  }
+}
+
+/* Celda de "no hay registros" */
+.text-muted.py-4 {
+  font-size: 0.9rem;
+}
+
+/* Botón ELIMINAR / CANCELAR pequeño a la derecha */
+.text-end .btn-outline-danger {
+  border-radius: 999px;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.85rem;
+  border-color: rgba($tim-accent, 0.4);
+  color: $tim-accent;
+
+  &:hover {
+    background: $tim-accent;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba($tim-accent, 0.4);
+    transform: translateY(-0.5px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+/* Pequeño badge de estado en boletos (si lo usas) */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* Responsivo: que la card no quede pegada en pantallas chicas */
+@media (max-width: 768px) {
+  .admin-content {
+    padding-inline: 1rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  .d-flex.justify-content-between.mb-3 {
+    flex-direction: column;
+
+    .form-control {
+      width: 100% !important;
+    }
+
+    .btn-outline-primary {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
