@@ -310,10 +310,11 @@ $miranda-bg-soft: #f4f6fb;
   border-radius: 6px;
   padding: 0.35rem 0;
   cursor: pointer;
-  background: #1abc9c;
+  background: #1abc9c;  // disponible
   color: #ffffff;
   user-select: none;
-  transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: transform 0.1s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
 }
 
 .seat-label:hover {
@@ -321,9 +322,27 @@ $miranda-bg-soft: #f4f6fb;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.seat-input:checked + .seat-label {
+/* seleccionado (solo si no está ocupado) */
+.seat-input:checked + .seat-label:not(.occupied) {
   background: $miranda-accent;
 }
+
+/* 🔹 estado OCUPADO (gris) */
+/* 🔹 asiento ocupado */
+.seat-label.occupied {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Si Angular marca "checked" por error, sigue gris */
+.seat-input:checked + .seat-label.occupied {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+}
+
 
 .compra-layout {
   display: flex;

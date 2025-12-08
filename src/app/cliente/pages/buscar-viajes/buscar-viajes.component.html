@@ -149,19 +149,25 @@
           </div>
 
           <div class="seat-grid">
-            <ng-container *ngFor="let seat of seatNumbers">
-              <input
-                #seatCheckbox
-                type="checkbox"
-                class="seat-input"
-                [id]="'seat-' + seat"
-                (change)="onSeatToggle(seat, seatCheckbox.checked)"
-              />
-              <label class="seat-label" [for]="'seat-' + seat">
-                {{ seat }}
-              </label>
-            </ng-container>
-          </div>
+  <ng-container *ngFor="let seat of seatNumbers">
+    <input
+      #seatCheckbox
+      type="checkbox"
+      class="seat-input"
+      [id]="'seat-' + seat"
+      [disabled]="isSeatOccupied(seat)"
+      (change)="onSeatToggle(seat, seatCheckbox.checked)"
+    />
+    <label
+      class="seat-label"
+      [ngClass]="{ 'occupied': isSeatOccupied(seat) }"
+      [for]="'seat-' + seat"
+    >
+      {{ seat }}
+    </label>
+  </ng-container>
+</div>
+
         </div>
       </div>
 

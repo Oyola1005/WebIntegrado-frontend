@@ -36,4 +36,11 @@ export class BoletoService {
   cancelar(id: number): Observable<Boleto> {
     return this.http.put<Boleto>(`${this.apiUrl}/${id}/cancelar`, {});
   }
+
+  /** 🔹 NUEVO: lista de asientos ocupados de un viaje */
+  getAsientosOcupados(viajeId: number): Observable<number[]> {
+    const token = localStorage.getItem('token');
+    if (!token) return of([]);
+    return this.http.get<number[]>(`${this.apiUrl}/ocupados/${viajeId}`);
+  }
 }

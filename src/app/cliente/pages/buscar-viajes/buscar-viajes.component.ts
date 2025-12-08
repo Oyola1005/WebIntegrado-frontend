@@ -29,7 +29,6 @@ export class BuscarViajesComponent implements OnInit {
   private boletoService = inject(BoletoService);
   private pasajeroService = inject(PasajeroService);
 
-  // ====== FECHAS ======
   todayStr: string = new Date().toISOString().split('T')[0];
 
   get minFechaRetorno(): string {
@@ -37,7 +36,6 @@ export class BuscarViajesComponent implements OnInit {
     return fechaIda || this.todayStr;
   }
 
-  // ====== FORM BUSQUEDA ======
   form: FormGroup = this.fb.group({
     origen: ['', Validators.required],
     destino: ['', Validators.required],
@@ -50,7 +48,6 @@ export class BuscarViajesComponent implements OnInit {
   errorMsg = '';
   buscado = false;
 
-  // ====== VIAJE / ASIENTOS ======
   selectedViaje: Viaje | null = null;
 
   seatNumbers: number[] = Array.from({ length: 40 }, (_, i) => i + 1);
@@ -59,14 +56,14 @@ export class BuscarViajesComponent implements OnInit {
   cantidadAsientos = 0;
   totalAPagar = 0;
 
-  // ====== MENSAJES ======
+  /** 🔹 Asientos ocupados del backend */
+  occupiedSeats: number[] = [];
+
   compraMsg = '';
   compraError = '';
 
-  // ====== PASAJERO ACTUAL (del backend) ======
   pasajeroActual: Pasajero | null = null;
 
-  // ====== FORMULARIO DE PASAJEROS ======
   pasajerosForm: FormGroup = this.fb.group({
     pasajeros: this.fb.array([])
   });
@@ -77,11 +74,7 @@ export class BuscarViajesComponent implements OnInit {
 
   mostrarFormularioPasajeros = false;
 
-  // ==========================
-  // CICLO DE VIDA
-  // ==========================
   ngOnInit(): void {
-    // 👇 SOLO intentamos cargar el pasajero si ya hay token
     const token = localStorage.getItem('token');
     if (token) {
       this.cargarPasajeroActual();
@@ -89,23 +82,20 @@ export class BuscarViajesComponent implements OnInit {
   }
 
   private cargarPasajeroActual(): void {
-  const token = localStorage.getItem('token');
-  if (!token) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-  this.pasajeroService.getPerfilActual().subscribe({
-    next: (p: Pasajero | null) => {
-      if (!p) return;
-      this.pasajeroActual = p;
-    },
-    error: (err: any) => {
-      console.error('No se pudo cargar el pasajero actual', err);
-    }
-  });
-}
+    this.pasajeroService.getPerfilActual().subscribe({
+      next: (p: Pasajero | null) => {
+        if (!p) return;
+        this.pasajeroActual = p;
+      },
+      error: (err: any) => {
+        console.error('No se pudo cargar el pasajero actual', err);
+      }
+    });
+  }
 
-  // ==========================
-  // BUSCAR VIAJES
-  // ==========================
   buscar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -118,7 +108,6 @@ export class BuscarViajesComponent implements OnInit {
     this.errorMsg = '';
     this.buscado = true;
 
-    // reset selección
     this.selectedViaje = null;
     this.selectedSeats = [];
     this.resumenAsientos = '';
@@ -128,6 +117,7 @@ export class BuscarViajesComponent implements OnInit {
     this.compraError = '';
     this.mostrarFormularioPasajeros = false;
     this.pasajerosArray.clear();
+    this.occupiedSeats = [];
 
     this.viajeService.buscarPorRuta(origen, destino, fechaIda).subscribe({
       next: (data: Viaje[]) => {
@@ -141,11 +131,9 @@ export class BuscarViajesComponent implements OnInit {
     });
   }
 
-  // ==========================
-  // SELECCIONAR VIAJE
-  // ==========================
   seleccionarViaje(viaje: Viaje): void {
     this.selectedViaje = viaje;
+
     this.selectedSeats = [];
     this.resumenAsientos = '';
     this.cantidadAsientos = 0;
@@ -154,12 +142,29 @@ export class BuscarViajesComponent implements OnInit {
     this.compraError = '';
     this.mostrarFormularioPasajeros = false;
     this.pasajerosArray.clear();
+    this.occupiedSeats = [];
+
+    this.boletoService.getAsientosOcupados(viaje.id!).subscribe({
+      next: (ocupados: number[]) => {
+        this.occupiedSeats = ocupados.map(x => Number(x));
+      },
+      error: (err) => {
+        console.error('Error cargando asientos ocupados', err);
+        this.occupiedSeats = [];
+      }
+    });
   }
 
-  // ==========================
-  // TOGGLE ASIENTOS
-  // ==========================
+  /** Si está ocupado */
+  isSeatOccupied(seat: number): boolean {
+    return this.occupiedSeats.includes(Number(seat));
+  }
+
   onSeatToggle(seatNumber: number, checked: boolean): void {
+    if (this.isSeatOccupied(seatNumber)) {
+      return;
+    }
+
     if (checked) {
       if (!this.selectedSeats.includes(seatNumber)) {
         this.selectedSeats.push(seatNumber);
@@ -170,17 +175,11 @@ export class BuscarViajesComponent implements OnInit {
 
     this.resumenAsientos = this.selectedSeats.join(', ');
     this.cantidadAsientos = this.selectedSeats.length;
-
-    if (this.selectedViaje) {
-      this.totalAPagar = this.cantidadAsientos * this.selectedViaje.precio;
-    } else {
-      this.totalAPagar = 0;
-    }
+    this.totalAPagar = this.selectedViaje ? this.cantidadAsientos * this.selectedViaje.precio : 0;
 
     this.construirFormularioPasajeros();
   }
 
-  // Construye el FormArray de pasajeros
   private construirFormularioPasajeros(): void {
     const arr = this.pasajerosArray;
     arr.clear();
@@ -197,7 +196,6 @@ export class BuscarViajesComponent implements OnInit {
       let email = '';
       let celular = '';
 
-      // SOLO EL PRIMER PASAJERO se autocompleta con el perfil
       if (index === 0 && this.pasajeroActual) {
         nombres = this.pasajeroActual.nombres;
         apellidos = this.pasajeroActual.apellidos;
@@ -218,10 +216,9 @@ export class BuscarViajesComponent implements OnInit {
       );
     });
 
-    this.mostrarFormularioPasajeros = this.selectedSeats.length > 0;
+    this.mostrarFormularioPasajeros = true;
   }
 
-  // Paso 1: mostrar formulario
   confirmarCompra(): void {
     if (!this.selectedViaje) {
       this.compraError = 'Debes seleccionar un viaje.';
@@ -240,24 +237,21 @@ export class BuscarViajesComponent implements OnInit {
     this.mostrarFormularioPasajeros = true;
   }
 
-  // Paso 2: enviar compra
   finalizarCompra(): void {
-    if (!this.selectedViaje) {
-      return;
-    }
+    if (!this.selectedViaje) return;
 
     if (this.pasajerosForm.invalid) {
       this.pasajerosForm.markAllAsTouched();
       return;
     }
 
-    const payload: CompraBoletoRequest = {
-      viajeId: this.selectedViaje.id!
-    };
-
-    const peticiones = this.selectedSeats.map(() =>
-      this.boletoService.comprar(payload)
-    );
+    const peticiones = this.selectedSeats.map(seat => {
+      const payload: CompraBoletoRequest = {
+        viajeId: this.selectedViaje!.id!,
+        numeroAsiento: seat
+      };
+      return this.boletoService.comprar(payload);
+    });
 
     this.loading = true;
     this.compraMsg = '';
@@ -267,8 +261,20 @@ export class BuscarViajesComponent implements OnInit {
       next: (resArr: any[]) => {
         this.compraMsg = `Se compraron ${resArr.length} boleto(s) correctamente.`;
         this.loading = false;
-        this.buscar(); // recargar viajes
+
+        this.occupiedSeats.push(...this.selectedSeats);
+        this.occupiedSeats = [...new Set(this.occupiedSeats)];
+
+        if (this.selectedViaje) {
+          this.selectedViaje.asientosDisponibles -= this.selectedSeats.length;
+        }
+
+        this.selectedSeats = [];
+        this.resumenAsientos = '';
+        this.cantidadAsientos = 0;
+        this.totalAPagar = 0;
         this.mostrarFormularioPasajeros = false;
+        this.pasajerosArray.clear();
       },
       error: (err: any) => {
         console.error(err);
