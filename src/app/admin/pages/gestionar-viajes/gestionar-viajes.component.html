@@ -1,96 +1,190 @@
-<div class="row">
-  <div class="col-md-8">
-    <h2>Gestión de Viajes</h2>
-
-    <div *ngIf="loading" class="alert alert-info">Cargando...</div>
-    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
-
-    <table class="table table-striped table-hover mt-3" *ngIf="viajes.length > 0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Origen</th>
-          <th>Destino</th>
-          <th>Salida</th>
-          <th>Llegada</th>
-          <th>Precio</th>
-          <th>Asientos</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let v of viajes">
-          <td>{{ v.id }}</td>
-          <td>{{ v.origen }}</td>
-          <td>{{ v.destino }}</td>
-          <td>{{ v.fechaSalida | date:'short' }}</td>
-          <td>{{ v.fechaLlegada | date:'short' }}</td>
-          <td>S/ {{ v.precio | number:'1.2-2' }}</td>
-          <td>{{ v.asientosDisponibles }}</td>
-          <td>{{ v.estado }}</td>
-          <td>
-            <button class="btn btn-sm btn-primary me-1" (click)="editarViaje(v)">Editar</button>
-            <button class="btn btn-sm btn-danger" (click)="eliminarViaje(v)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p *ngIf="!loading && viajes.length === 0" class="text-muted mt-3">
-      No hay viajes registrados.
-    </p>
+<!-- src/app/admin/pages/gestionar-viajes/gestionar-viajes.component.html -->
+<div class="admin-wrapper container-fluid py-4">
+  <div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+      <h2 class="page-title">Gestión de viajes</h2>
+      <button class="btn btn-outline-light btn-sm shadow-sm" (click)="nuevoViaje()">
+        + Nuevo viaje
+      </button>
+    </div>
   </div>
 
-  <div class="col-md-4">
-    <h3>{{ modoEdicion ? 'Editar viaje' : 'Nuevo viaje' }}</h3>
+  <!-- Mensajes -->
+  <div *ngIf="loading" class="alert alert-info">Procesando...</div>
+  <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+  <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
 
-    <form [formGroup]="viajeForm" (ngSubmit)="guardarViaje()">
-      <div class="mb-2">
-        <label class="form-label">Origen</label>
-        <input type="text" class="form-control" formControlName="origen">
+  <div class="row g-4">
+    <!-- LISTA DE VIAJES -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold">Viajes registrados</span>
+          <span class="badge bg-primary">{{ viajes.length }} viajes</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Ruta</th>
+                <th>Salida</th>
+                <th>Llegada</th>
+                <th>Precio</th>
+                <th>Asientos</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let v of viajes">
+                <td>{{ v.id }}</td>
+                <td>
+                  <div class="fw-semibold">{{ v.origen }} → {{ v.destino }}</div>
+                </td>
+                <td>
+                  <div class="small">
+                    {{ v.fechaSalida | date:'shortDate' }}<br />
+                    <span class="text-muted">{{ v.fechaSalida | date:'shortTime' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="small">
+                    {{ v.fechaLlegada | date:'shortDate' }}<br />
+                    <span class="text-muted">{{ v.fechaLlegada | date:'shortTime' }}</span>
+                  </div>
+                </td>
+                <td>S/ {{ v.precio | number:'1.2-2' }}</td>
+                <td>{{ v.asientosDisponibles }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [ngClass]="{
+                      'bg-success': v.estado === 'PROGRAMADO',
+                      'bg-warning text-dark': v.estado === 'RESERVADO',
+                      'bg-secondary': v.estado === 'COMPLETADO',
+                      'bg-danger': v.estado === 'CANCELADO'
+                    }"
+                  >
+                    {{ v.estado }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="editarViaje(v)">
+                    Editar
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="eliminarViaje(v)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="!viajes.length && !loading">
+                <td colspan="8" class="text-center text-muted py-4">
+                  No hay viajes registrados todavía.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
 
-      <div class="mb-2">
-        <label class="form-label">Destino</label>
-        <input type="text" class="form-control" formControlName="destino">
-      </div>
+    <!-- FORMULARIO (CREAR / EDITAR) -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <span class="fw-semibold">
+            {{ editando ? 'Editar viaje' : 'Nuevo viaje' }}
+          </span>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="guardarViaje()">
+            <div class="mb-3">
+              <label class="form-label">Origen</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="origen"
+                placeholder="Ej: Lima"
+              />
+            </div>
 
-      <div class="mb-2">
-        <label class="form-label">Fecha y hora de salida</label>
-        <input type="datetime-local" class="form-control" formControlName="fechaSalida">
-      </div>
+            <div class="mb-3">
+              <label class="form-label">Destino</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="destino"
+                placeholder="Ej: Chimbote"
+              />
+            </div>
 
-      <div class="mb-2">
-        <label class="form-label">Fecha y hora de llegada</label>
-        <input type="datetime-local" class="form-control" formControlName="fechaLlegada">
-      </div>
+            <div class="mb-3">
+              <label class="form-label">Fecha y hora de salida</label>
+              <input
+                type="datetime-local"
+                class="form-control"
+                formControlName="fechaSalida"
+                [min]="minFechaSalida"
+              />
+              <div *ngIf="form.hasError('rangoFechasInvalido') && form.touched" class="form-text text-danger">
+                La fecha de llegada debe ser mayor a la fecha de salida.
+              </div>
+            </div>
 
-      <div class="mb-2">
-        <label class="form-label">Precio</label>
-        <input type="number" class="form-control" formControlName="precio" step="0.01">
-      </div>
+            <div class="mb-3">
+              <label class="form-label">Fecha y hora de llegada</label>
+              <input
+                type="datetime-local"
+                class="form-control"
+                formControlName="fechaLlegada"
+              />
+            </div>
 
-      <div class="mb-2">
-        <label class="form-label">Asientos disponibles</label>
-        <input type="number" class="form-control" formControlName="asientosDisponibles">
-      </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label">Precio (S/)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="precio"
+                  min="1"
+                  step="1"
+                />
+              </div>
+              <div class="col-6">
+                <label class="form-label">Asientos disponibles</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="asientosDisponibles"
+                  min="1"
+                  step="1"
+                />
+              </div>
+            </div>
 
-      <div class="mb-3">
-        <label class="form-label">Estado</label>
-        <select class="form-select" formControlName="estado">
-          <option value="PROGRAMADO">PROGRAMADO</option>
-          <option value="COMPLETADO">COMPLETADO</option>
-          <option value="CANCELADO">CANCELADO</option>
-        </select>
-      </div>
+            <div class="mb-3">
+              <label class="form-label">Estado</label>
+              <select class="form-select" formControlName="estado">
+                <option value="PROGRAMADO">PROGRAMADO</option>
+                <option value="RESERVADO">RESERVADO</option>
+                <option value="COMPLETADO">COMPLETADO</option>
+                <option value="CANCELADO">CANCELADO</option>
+              </select>
+            </div>
 
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-success">
-          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="nuevoViaje()">Limpiar</button>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary" [disabled]="loading">
+                {{ editando ? 'Guardar cambios' : 'Crear viaje' }}
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="nuevoViaje()">
+                Limpiar
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>

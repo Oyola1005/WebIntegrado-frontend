@@ -8,7 +8,7 @@ import { routes } from './app.routes';
 // Interceptor que agrega el token JWT
 import { authTokenInterceptor } from './auth/auth-token.interceptor';
 
-// Interceptor global que maneja errores (401, etc.)
+// Interceptor global que maneja errores HTTP
 import { errorHttpInterceptor } from './core/interceptors/error-http.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -16,11 +16,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
 
-    // HttpClient + interceptores
+    // HttpClient + Interceptores globales
     provideHttpClient(
       withInterceptors([
-        authTokenInterceptor,   // agrega el token
-        errorHttpInterceptor    // maneja errores HTTP globalmente
+        authTokenInterceptor,   // agrega el JWT automáticamente
+        errorHttpInterceptor    // maneja errores del backend
       ])
     )
   ]

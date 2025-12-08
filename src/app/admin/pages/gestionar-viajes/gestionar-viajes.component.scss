@@ -1,0 +1,24 @@
+// src/app/admin/pages/gestionar-viajes/gestionar-viajes.component.scss
+.admin-wrapper {
+  background: #f4f6fb;
+  min-height: calc(100vh - 60px);
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0b3b73;
+}
+
+.card-header {
+  background: linear-gradient(90deg, #0b3b73, #1565c0);
+  color: #ffffff;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.6rem 0.75rem;
+}
+
+.badge {
+  font-weight: 600;
+}

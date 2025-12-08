@@ -12,6 +12,12 @@ export class ViajeService {
 
   constructor(private http: HttpClient) {}
 
+  /** Listar todos los viajes (alias usado por el admin) */
+  listar(): Observable<Viaje[]> {
+    return this.http.get<Viaje[]>(this.apiUrl);
+  }
+
+  /** Versión anterior, la puedes seguir usando si quieres */
   obtenerTodos(): Observable<Viaje[]> {
     return this.http.get<Viaje[]>(this.apiUrl);
   }
@@ -28,11 +34,11 @@ export class ViajeService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // 👉 ahora acepta fechaIda opcional
+  // 👉 búsqueda que usa el módulo cliente
   buscarPorRuta(origen: string, destino: string, fechaIda?: string): Observable<Viaje[]> {
     const params: any = { origen, destino };
     if (fechaIda) {
-      params.fechaIda = fechaIda;  // mismo nombre que en el backend
+      params.fechaIda = fechaIda;  // debe coincidir con el nombre del backend
     }
     return this.http.get<Viaje[]>(`${this.apiUrl}/busqueda`, { params });
   }

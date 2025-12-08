@@ -6,37 +6,42 @@ import {
   Router,
   UrlTree
 } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
 
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
-
     const requiredRole = route.data['role'] as string;
-    const userRole = localStorage.getItem('rol');
+    const userRole = this.authService.getRole();  // 👈 ahora leemos del AuthService
 
-    // Si NO hay rol → no está logueado correctamente
+    // Sin rol → sesión inválida, mandamos al login
     if (!userRole) {
       return this.router.parseUrl('/auth');
     }
 
-    // Si el rol coincide, deja pasar
+    // Rol correcto → deja pasar
     if (userRole === requiredRole) {
       return true;
     }
 
-    // Si el rol no coincide → redirección inteligente
+    // Rol distinto → redirección “inteligente”
     if (userRole === 'ADMIN') {
       return this.router.parseUrl('/admin');
-    } else if (userRole === 'CLIENTE') {
+    }
+
+    if (userRole === 'CLIENTE') {
       return this.router.parseUrl('/cliente');
     }
 
-    // Cualquier otro caso extraño
+    // Cualquier otro caso raro
     return this.router.parseUrl('/auth');
   }
 }
