@@ -1,35 +1,73 @@
-
-// Barra superior cliente
+/* NAVBAR ESTILOS */
 .nav-cliente {
-  background-color: #007bff; // azul de la paleta
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-
-  .btn-outline-light.btn-sm {
-    border-radius: 999px;
-    padding-inline: 0.9rem;
-    font-weight: 500;
-  }
-
-  .btn-danger.btn-sm {
-    border-radius: 999px;
-    font-weight: 500;
-  }
+  background-color: #007bff; /* tu azul del sistema */
+  padding: 0.6rem 1rem;
 }
 
-// Logo
-.logo-tim {
-  height: 42px;
+/* LOGO PEQUEÑO Y ALINEADO */
+.logo-navbar {
+  height: 42px;      /* tamaño perfecto */
   width: auto;
+  object-fit: contain;
   display: block;
 }
 
-// Franja de saludo centrado
+/* SALUDO */
 .cliente-greeting {
   text-align: center;
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
+  background: #f8f9fa;
+  padding: 0.7rem 0;
+  font-size: 1.1rem;
+}
+.footer-tim {
+  background-color: #0b4c9c; // azul tipo maqueta
+  color: #fff;
+  margin-top: 3rem;
+}
+
+.footer-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.footer-title {
   font-weight: 600;
-  color: #0b3b73;
-  background: #f4f6fb;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+}
+
+.footer-links a {
+  color: #e5e5e5;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  color: #ffffff;
+}
+
+.footer-social a {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-right: 0.75rem;
+}
+
+.footer-social a:hover {
+  opacity: 0.8;
+}
+
+.footer-tim p {
+  color: #e5e5e5;
+}
+
+@media (max-width: 767.98px) {
+  .footer-tim {
+    text-align: center;
+  }
+
+  .footer-logo {
+    margin-bottom: 0.5rem;
+  }
 }

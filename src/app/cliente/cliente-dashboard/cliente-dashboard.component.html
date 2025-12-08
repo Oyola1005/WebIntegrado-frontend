@@ -1,12 +1,14 @@
 <nav class="navbar navbar-expand-lg navbar-light nav-cliente px-3">
   <div class="container-fluid">
+
     <!-- LOGO EMPRESA -->
     <a class="navbar-brand d-flex align-items-center" href="#">
-      <img
-        src="assets/img/logo-tim.png"
-        alt="Transporte Interprovincial Miranda"
-        class="logo-tim me-2"
+      <img 
+        src="https://i.postimg.cc/1XkJWVKf/logo-tim.jpg"
+        alt="Transporte Miranda"
+        class="logo-navbar"
       />
+      <span class="brand-title ms-2">Transporte Miranda</span>
     </a>
 
     <!-- BOTONES DERECHA -->
@@ -16,10 +18,11 @@
       <a routerLink="/cliente/perfil" class="btn btn-outline-light btn-sm">Mi perfil</a>
       <button class="btn btn-danger btn-sm" routerLink="/auth">Salir</button>
     </div>
+
   </div>
 </nav>
 
-<!-- SALUDO CENTRADO FUERA DEL NAVBAR -->
+<!-- SALUDO -->
 <div class="cliente-greeting">
   Hola <strong>{{ userName }}</strong> 👋
 </div>
@@ -27,3 +30,56 @@
 <div class="container mt-4">
   <router-outlet></router-outlet>
 </div>
+
+<!-- ===================== -->
+<!--       FOOTER TIM      -->
+<!-- ===================== -->
+
+<footer class="footer-tim mt-5 pt-4 pb-4">
+  <div class="container">
+    <div class="row align-items-start">
+
+      <!-- LOGO + INFO -->
+      <div class="col-md-4 mb-4 mb-md-0 d-flex align-items-start">
+        <img
+          src="https://i.postimg.cc/1XkJWVKf/logo-tim.jpg"
+          class="footer-logo me-3"
+          alt="Logo TIM"
+        />
+        <div>
+          <h5 class="footer-title">Transporte Interprovincial Miranda</h5>
+          <p class="footer-subtext">Viajando contigo desde 1980</p>
+        </div>
+      </div>
+
+      <!-- ENLACES -->
+      <div class="col-md-4 mb-4 mb-md-0">
+        <h6 class="footer-title">Enlaces</h6>
+        <ul class="footer-links list-unstyled">
+          <li><a routerLink="/cliente/buscar">Inicio</a></li>
+          <li><a routerLink="/cliente/mis-boletos">Mis viajes</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTACTO -->
+      <div class="col-md-4">
+        <h6 class="footer-title">Contacto</h6>
+        <p class="footer-subtext"><i class="fa-solid fa-phone me-2"></i>(01) 123-4567</p>
+        <p class="footer-subtext">
+  <i class="fa-solid fa-envelope me-2"></i>
+  contacto&#64;mirandatransportes.com
+</p>
+
+        <p class="footer-subtext"><i class="fa-solid fa-location-dot me-2"></i>Lima - Perú</p>
+
+        <h6 class="footer-title mt-3">Síguenos</h6>
+        <div class="footer-social">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</footer>
