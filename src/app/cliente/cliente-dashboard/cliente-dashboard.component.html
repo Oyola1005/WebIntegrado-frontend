@@ -12,13 +12,29 @@
     </a>
 
     <!-- BOTONES DERECHA -->
-    <div class="ms-auto d-flex gap-2">
-      <a routerLink="/cliente/buscar" class="btn btn-outline-light btn-sm">Buscar viajes</a>
-      <a routerLink="/cliente/mis-boletos" class="btn btn-outline-light btn-sm">Mis boletos</a>
-      <a routerLink="/cliente/perfil" class="btn btn-outline-light btn-sm">Mi perfil</a>
-      <button class="btn btn-danger btn-sm" routerLink="/auth">Salir</button>
-    </div>
+    <div class="ms-auto d-flex gap-3 nav-buttons">
 
+  <a routerLink="/cliente/buscar" class="nav-btn">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    Buscar viajes
+  </a>
+
+  <a routerLink="/cliente/mis-boletos" class="nav-btn">
+    <i class="fa-solid fa-ticket"></i>
+    Mis boletos
+  </a>
+
+  <a routerLink="/cliente/perfil" class="nav-btn">
+    <i class="fa-solid fa-user"></i>
+    Mi perfil
+  </a>
+
+  <button class="nav-btn logout-btn" routerLink="/auth">
+    <i class="fa-solid fa-right-from-bracket"></i>
+    Salir
+  </button>
+
+    </div>
   </div>
 </nav>
 
