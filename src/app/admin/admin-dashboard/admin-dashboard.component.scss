@@ -1,5 +1,132 @@
+/* src/app/admin/admin-dashboard/admin-dashboard.component.scss */
+
 :host {
   display: block;
+}
+
+/* Layout general */
+.admin-shell {
   min-height: 100vh;
-  background-color: #f3f4f6;
+  background: #f3f4f6; /* Fondo CLARO */
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER TOPBAR */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+  color: #ffffff;
+  padding: .85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, .28);
+}
+
+/* Branding */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: white;
+  color: #2563eb;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  font-size: .75rem;
+  opacity: .9;
+}
+
+/* NAVIGATION */
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.nav-pill {
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.35);
+  color: #ffffff;
+  text-decoration: none;
+  transition: all .18s ease-out;
+}
+
+.nav-pill:hover {
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.nav-pill.active {
+  background: #ffffff;
+  color: #0ea5e9;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+
+/* Logout */
+.btn-logout {
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  font-size: .8rem;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background: #dc2626;
+}
+
+/* MAIN CONTENT */
+.admin-main {
+  flex: 1;
+  padding: 2rem 2.5rem;
+}
+
+/* Responsivo */
+@media (max-width: 920px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+  }
+
+  .admin-main {
+    padding-inline: 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-main {
+    padding-inline: .75rem;
+  }
 }

@@ -1,16 +1,51 @@
-<nav class="navbar navbar-dark bg-dark px-3">
-  <span class="navbar-brand mb-0 h1">
-    Administrador - Transporte Interprovincial Miranda
-  </span>
+<!-- src/app/admin/admin-dashboard/admin-dashboard.component.html -->
+<div class="admin-shell">
 
-  <div class="d-flex gap-2">
-    <a routerLink="/admin/viajes" class="btn btn-outline-light btn-sm">Viajes</a>
-    <a routerLink="/admin/boletos" class="btn btn-outline-light btn-sm">Boletos</a>
-    <a routerLink="/admin/pasajeros" class="btn btn-outline-light btn-sm">Pasajeros</a>
-    <button class="btn btn-danger btn-sm" routerLink="/auth">Salir</button>
-  </div>
-</nav>
+  <!-- TOPBAR ADMIN -->
+  <header class="admin-header shadow-sm">
+    <div class="brand">
+      <div class="brand-logo">
+        TIM
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Administrador</span>
+        <span class="brand-subtitle">Transporte Interprovincial Miranda</span>
+      </div>
+    </div>
 
-<div class="container mt-4">
-  <router-outlet></router-outlet>
+    <nav class="admin-nav">
+      <a
+        routerLink="/admin/viajes"
+        routerLinkActive="active"
+        class="nav-pill"
+      >
+        Viajes
+      </a>
+
+      <a
+        routerLink="/admin/boletos"
+        routerLinkActive="active"
+        class="nav-pill"
+      >
+        Boletos
+      </a>
+
+      <a
+        routerLink="/admin/pasajeros"
+        routerLinkActive="active"
+        class="nav-pill"
+      >
+        Pasajeros
+      </a>
+
+      <button class="btn-logout" routerLink="/auth">
+        Salir
+      </button>
+    </nav>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="admin-main">
+    <router-outlet></router-outlet>
+  </main>
 </div>

@@ -6,7 +6,8 @@ import {
   FormGroup,
   ValidationErrors,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  FormGroupDirective
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Viaje } from '../../../core/models/viaje.model';
@@ -27,7 +28,7 @@ export class GestionarViajesComponent implements OnInit {
 
   viajes: Viaje[] = [];
 
-  // mínima fecha permitida en el input (hoy)
+  // 👉 mínima fecha permitida (fecha actual en formato YYYY-MM-DDTHH:mm)
   minFechaSalida: string = '';
 
   form: FormGroup = this.fb.group(
@@ -40,7 +41,9 @@ export class GestionarViajesComponent implements OnInit {
       asientosDisponibles: [0, [Validators.required, Validators.min(1)]],
       estado: ['PROGRAMADO', [Validators.required]]
     },
-    { validators: [GestionarViajesComponent.validarRangoFechas] }
+    {
+      validators: [GestionarViajesComponent.validarRangoFechas]
+    }
   );
 
   loading = false;
@@ -50,26 +53,56 @@ export class GestionarViajesComponent implements OnInit {
   private viajeEditandoId?: number;
   editando = false;
 
-  // ============= CICLO DE VIDA =============
   ngOnInit(): void {
+    // 🚫 No permitir fechas de salida en el pasado
     this.minFechaSalida = new Date().toISOString().slice(0, 16);
     this.cargarViajes();
   }
 
   // ============= VALIDACIÓN DE FECHAS =============
   private static validarRangoFechas(group: AbstractControl): ValidationErrors | null {
-    const salida = group.get('fechaSalida')?.value;
-    const llegada = group.get('fechaLlegada')?.value;
+    const fg = group as FormGroup;
 
-    if (!salida || !llegada) return null;
+    const ctrlSalida = fg.get('fechaSalida');
+    const ctrlLlegada = fg.get('fechaLlegada');
+    if (!ctrlSalida || !ctrlLlegada) return null;
 
-    const dSalida = new Date(salida);
-    const dLlegada = new Date(llegada);
+    const vSalida = ctrlSalida.value;
+    const vLlegada = ctrlLlegada.value;
 
+    // Si falta alguna, limpiamos error en llegada y no marcamos nada
+    if (!vSalida || !vLlegada) {
+      GestionarViajesComponent.limpiarErrorLlegada(ctrlLlegada);
+      return null;
+    }
+
+    const dSalida = new Date(vSalida);
+    const dLlegada = new Date(vLlegada);
+
+    if (isNaN(dSalida.getTime()) || isNaN(dLlegada.getTime())) {
+      GestionarViajesComponent.limpiarErrorLlegada(ctrlLlegada);
+      return null;
+    }
+
+    // ❌ Llegada <= salida → error
     if (dLlegada <= dSalida) {
+      const errores = ctrlLlegada.errors || {};
+      errores['rangoFechasInvalido'] = true;
+      ctrlLlegada.setErrors(errores);
       return { rangoFechasInvalido: true };
     }
+
+    // ✅ Si ahora es correcto, limpiamos solo ese error
+    GestionarViajesComponent.limpiarErrorLlegada(ctrlLlegada);
     return null;
+  }
+
+  private static limpiarErrorLlegada(ctrlLlegada: AbstractControl): void {
+    if (!ctrlLlegada.errors || !ctrlLlegada.errors['rangoFechasInvalido']) return;
+
+    const { rangoFechasInvalido, ...resto } = ctrlLlegada.errors;
+    const tieneOtros = Object.keys(resto).length > 0;
+    ctrlLlegada.setErrors(tieneOtros ? resto : null);
   }
 
   get f() {
@@ -88,7 +121,7 @@ export class GestionarViajesComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Error cargando viajes', err);
+        console.error(err);
         this.errorMsg = 'No se pudo cargar la lista de viajes.';
         this.loading = false;
       }
@@ -120,7 +153,6 @@ export class GestionarViajesComponent implements OnInit {
     this.form.patchValue({
       origen: v.origen,
       destino: v.destino,
-      // del backend viene con segundos → para el input cortamos a YYYY-MM-DDTHH:mm
       fechaSalida: v.fechaSalida?.slice(0, 16),
       fechaLlegada: v.fechaLlegada?.slice(0, 16),
       precio: v.precio,
@@ -135,7 +167,6 @@ export class GestionarViajesComponent implements OnInit {
   // ============= ELIMINAR VIAJE =============
   eliminarViaje(v: Viaje): void {
     if (!v.id) return;
-
     if (!confirm(`¿Eliminar el viaje ${v.origen} → ${v.destino}?`)) return;
 
     this.loading = true;
@@ -149,7 +180,7 @@ export class GestionarViajesComponent implements OnInit {
         this.cargarViajes();
       },
       error: (err: any) => {
-        console.error('Error eliminando viaje', err);
+        console.error(err);
         this.errorMsg = 'No se pudo eliminar el viaje.';
         this.loading = false;
       }
@@ -169,23 +200,13 @@ export class GestionarViajesComponent implements OnInit {
 
     const raw = this.form.value;
 
-    // 🔧 Aseguramos formato con segundos para el backend (LocalDateTime)
-    const salida: string = raw.fechaSalida;
-    const llegada: string = raw.fechaLlegada;
-
-    const fechaSalidaIso =
-      salida && salida.length === 16 ? `${salida}:00` : salida;
-
-    const fechaLlegadaIso =
-      llegada && llegada.length === 16 ? `${llegada}:00` : llegada;
-
     const payload: Viaje = {
       origen: raw.origen,
       destino: raw.destino,
-      fechaSalida: fechaSalidaIso,
-      fechaLlegada: fechaLlegadaIso,
-      precio: Number(raw.precio),
-      asientosDisponibles: Number(raw.asientosDisponibles),
+      fechaSalida: raw.fechaSalida,
+      fechaLlegada: raw.fechaLlegada,
+      precio: raw.precio,
+      asientosDisponibles: raw.asientosDisponibles,
       estado: raw.estado
     };
 
@@ -209,8 +230,7 @@ export class GestionarViajesComponent implements OnInit {
       error: (err: any) => {
         console.error('Error guardando viaje', err);
         this.loading = false;
-        this.errorMsg =
-          'No se pudo guardar el viaje. Revisa los datos e inténtalo de nuevo.';
+        this.errorMsg = 'No se pudo guardar el viaje. Revisa los datos e inténtalo de nuevo.';
       }
     });
   }
