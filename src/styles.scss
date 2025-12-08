@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+body, * {
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: 0.2px;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+p, span, label, input, button, select {
+  font-weight: 400;
+}

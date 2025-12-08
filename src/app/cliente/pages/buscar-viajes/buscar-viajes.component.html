@@ -1,4 +1,4 @@
-<!-- HERO principal: barra de búsqueda tipo Transporte Miranda -->
+<!-- HERO principal: la imagen es el cuadro -->
 <section class="hero-bus">
   <div class="hero-overlay">
     <div class="hero-container">
@@ -140,9 +140,7 @@
       Asientos disponibles: {{ selectedViaje.asientosDisponibles }}
     </p>
 
-    <!-- CONTENEDOR PRINCIPAL 2 COLUMNAS -->
     <div class="compra-layout">
-      <!-- COLUMNA IZQUIERDA (ASIENTOS) -->
       <div class="compra-left">
         <div class="seat-layout">
           <div class="seat-legend">
@@ -167,7 +165,6 @@
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA (RESUMEN + BOTONES) -->
       <div class="compra-right">
         <div class="resumen-card">
           <h5 class="titulo-resumen">Resumen de tu reserva</h5>
@@ -186,7 +183,6 @@
             <span class="precio-total">S/ {{ totalAPagar | number:'1.2-2' }}</span>
           </p>
 
-          <!-- Paso 1: mostrar formularios de pasajeros -->
           <button
             type="button"
             class="btn btn-primary w-100 mt-2"
@@ -195,7 +191,6 @@
             Confirmar compra
           </button>
 
-          <!-- Mensajes generales -->
           <div *ngIf="compraMsg" class="alert alert-success mt-3">
             {{ compraMsg }}
           </div>
@@ -206,7 +201,6 @@
       </div>
     </div>
 
-    <!-- FORMULARIO DE PASAJEROS (PASO 2) -->
     <div *ngIf="mostrarFormularioPasajeros" class="pasajeros-form-card mt-4">
       <h5>Datos de los pasajeros</h5>
       <form [formGroup]="pasajerosForm" (ngSubmit)="finalizarCompra()">
