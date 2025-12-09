@@ -20,19 +20,28 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
     const requiredRole = route.data['role'] as string;
-    const userRole = this.authService.getRole();  // 👈 ahora leemos del AuthService
 
-    // Sin rol → sesión inválida, mandamos al login
-    if (!userRole) {
+    const token = this.authService.getToken();
+    const userRole = this.authService.getRole();
+
+    // ⛔ Sin token o token inválido → al login
+    if (!token || !this.authService.isTokenValid(token)) {
+      this.authService.logout();
       return this.router.parseUrl('/auth');
     }
 
-    // Rol correcto → deja pasar
+    // ⛔ Sin rol guardado → sesión inválida
+    if (!userRole) {
+      this.authService.logout();
+      return this.router.parseUrl('/auth');
+    }
+
+    // ✅ Rol correcto
     if (userRole === requiredRole) {
       return true;
     }
 
-    // Rol distinto → redirección “inteligente”
+    // 🔁 Rol distinto → redirección “inteligente”
     if (userRole === 'ADMIN') {
       return this.router.parseUrl('/admin');
     }
@@ -41,7 +50,8 @@ export class RoleGuard implements CanActivate {
       return this.router.parseUrl('/cliente');
     }
 
-    // Cualquier otro caso raro
+    // Caso raro → al login
+    this.authService.logout();
     return this.router.parseUrl('/auth');
   }
 }

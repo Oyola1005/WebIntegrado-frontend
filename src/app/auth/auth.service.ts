@@ -89,7 +89,32 @@ export class AuthService {
     return this.getAuthData()?.nombreMostrado ?? null;
   }
 
+  // ======== Decodificar JWT sin librerías externas ========
+  private decodeToken(token: string): any | null {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      if (!payloadBase64) return null;
+
+      // JWT usa base64url, convertimos a base64 normal
+      const base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+      const json = atob(base64);
+      return JSON.parse(json);
+    } catch {
+      return null;
+    }
+  }
+
+  // ✅ Validar estructura + expiración del token
+  isTokenValid(token: string): boolean {
+    const decoded = this.decodeToken(token);
+    if (!decoded || !decoded.exp) return false;
+
+    const expirationMs = decoded.exp * 1000; // exp viene en segundos
+    return expirationMs > Date.now();
+  }
+
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    return !!token && this.isTokenValid(token);
   }
 }
