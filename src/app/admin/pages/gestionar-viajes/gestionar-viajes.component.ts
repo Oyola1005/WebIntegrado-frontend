@@ -6,8 +6,7 @@ import {
   FormGroup,
   ValidationErrors,
   Validators,
-  ReactiveFormsModule,
-  FormGroupDirective
+  ReactiveFormsModule
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Viaje } from '../../../core/models/viaje.model';
@@ -33,8 +32,8 @@ export class GestionarViajesComponent implements OnInit {
 
   form: FormGroup = this.fb.group(
     {
-      origen: ['', [Validators.required, Validators.minLength(3)]],
-      destino: ['', [Validators.required, Validators.minLength(3)]],
+      origen: ['', [Validators.required]],
+      destino: ['', [Validators.required]],
       fechaSalida: ['', [Validators.required]],
       fechaLlegada: ['', [Validators.required]],
       precio: [0, [Validators.required, Validators.min(1)]],
@@ -54,8 +53,11 @@ export class GestionarViajesComponent implements OnInit {
   editando = false;
 
   ngOnInit(): void {
-    // 🚫 No permitir fechas de salida en el pasado
-    this.minFechaSalida = new Date().toISOString().slice(0, 16);
+    // 🚫 No permitir fechas en el pasado
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    this.minFechaSalida = now.toISOString().slice(0, 16);
+
     this.cargarViajes();
   }
 

@@ -114,13 +114,21 @@
             <!-- ORIGEN -->
             <div class="mb-3">
               <label class="form-label">Origen</label>
-              <input type="text" class="form-control" formControlName="origen" placeholder="Ej: Lima" />
+              <select class="form-select" formControlName="origen">
+                <option value="" disabled>Seleccionar origen</option>
+                <option value="Lima">Lima</option>
+                <option value="Chimbote">Chimbote</option>
+              </select>
             </div>
 
             <!-- DESTINO -->
             <div class="mb-3">
               <label class="form-label">Destino</label>
-              <input type="text" class="form-control" formControlName="destino" placeholder="Ej: Chimbote" />
+              <select class="form-select" formControlName="destino">
+                <option value="" disabled>Seleccionar destino</option>
+                <option value="Lima">Lima</option>
+                <option value="Chimbote">Chimbote</option>
+              </select>
             </div>
 
             <!-- FECHA SALIDA -->
@@ -141,6 +149,7 @@
                 type="datetime-local"
                 class="form-control"
                 formControlName="fechaLlegada"
+                [min]="minFechaSalida"
               />
 
               <!-- ERROR SOLO SI LA FECHA ES INVÁLIDA -->

@@ -1,29 +1,45 @@
 <!-- src/app/auth/register/register.component.html -->
-<div class="register-wrapper d-flex flex-column align-items-center justify-content-center">
+<div class="register-wrapper">
+  <div class="register-card">
 
-  <div class="register-card bg-white p-4 p-md-5">
+    <!-- CABECERA ELEGANTE -->
+    <div class="register-header">
+      <div class="register-badge">
+        <span class="register-icon">🚌</span>
+      </div>
+      <div class="register-header-text">
+        <h2 class="reg-title">Crear cuenta</h2>
+        <p class="reg-subtitle">
+          Regístrate para comprar tus pasajes en <strong>Transporte Miranda</strong>.
+        </p>
+      </div>
+    </div>
 
-    <h2 class="fw-bold text-center mb-2">Crear cuenta</h2>
-    <p class="text-muted text-center mb-4">
-      Regístrate para comprar tus pasajes en Transporte Miranda.
-    </p>
+    <!-- PEQUEÑAS AYUDAS -->
+    <ul class="register-hints">
+      <li>Usa tu correo real para recibir tus boletos.</li>
+      <li>El celular debe tener <strong>9 dígitos</strong>.</li>
+    </ul>
 
     <!-- ERROR GLOBAL DEL BACKEND -->
-    <div *ngIf="errorMessage" class="alert alert-danger py-2">
+    <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-3">
       {{ errorMessage }}
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="registrar()">
+    <form [formGroup]="form" (ngSubmit)="registrar()" class="register-form">
       <div class="row g-3">
         <!-- NOMBRES -->
         <div class="col-md-6">
           <label class="form-label">Nombres</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="nombres"
-            placeholder="Ej: Miguel Ángel"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              class="form-control border-0 shadow-none"
+              formControlName="nombres"
+              placeholder="Ej: Miguel Ángel"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('nombres')?.touched && form.get('nombres')?.invalid"
@@ -35,12 +51,15 @@
         <!-- APELLIDOS -->
         <div class="col-md-6">
           <label class="form-label">Apellidos</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="apellidos"
-            placeholder="Ej: Oyola"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              class="form-control border-0 shadow-none"
+              formControlName="apellidos"
+              placeholder="Ej: Oyola"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('apellidos')?.touched && form.get('apellidos')?.invalid"
@@ -52,12 +71,15 @@
         <!-- DNI -->
         <div class="col-md-6">
           <label class="form-label">DNI</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="dni"
-            placeholder="8 dígitos"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">🪪</span>
+            <input
+              type="text"
+              class="form-control border-0 shadow-none"
+              formControlName="dni"
+              placeholder="8 dígitos"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('dni')?.touched && form.get('dni')?.invalid"
@@ -74,12 +96,15 @@
         <!-- TELÉFONO -->
         <div class="col-md-6">
           <label class="form-label">Teléfono</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="telefono"
-            placeholder="9 dígitos"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">📱</span>
+            <input
+              type="text"
+              class="form-control border-0 shadow-none"
+              formControlName="telefono"
+              placeholder="9 dígitos"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('telefono')?.touched && form.get('telefono')?.invalid"
@@ -96,12 +121,15 @@
         <!-- CORREO -->
         <div class="col-md-6">
           <label class="form-label">Correo</label>
-          <input
-            type="email"
-            class="form-control"
-            formControlName="email"
-            placeholder="ejemplo@correo.com"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              class="form-control border-0 shadow-none"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
@@ -118,12 +146,15 @@
         <!-- CONTRASEÑA -->
         <div class="col-md-6">
           <label class="form-label">Contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="password"
-            placeholder="Mínimo 6 caracteres"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              class="form-control border-0 shadow-none"
+              formControlName="password"
+              placeholder="Mínimo 6 caracteres"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
@@ -138,14 +169,17 @@
         </div>
 
         <!-- CONFIRMAR CONTRASEÑA -->
-        <div class="col-md-6">
+        <div class="col-12">
           <label class="form-label">Repetir contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="confirmPassword"
-            placeholder="Repite la contraseña"
-          />
+          <div class="input-wrapper">
+            <span class="input-icon">🔁</span>
+            <input
+              type="password"
+              class="form-control border-0 shadow-none"
+              formControlName="confirmPassword"
+              placeholder="Repite la contraseña"
+            />
+          </div>
           <div
             class="small text-danger mt-1"
             *ngIf="form.get('confirmPassword')?.touched"
@@ -153,7 +187,9 @@
             <span *ngIf="form.get('confirmPassword')?.errors?.['required']">
               Debes confirmar la contraseña.
             </span>
-            <span *ngIf="form.value.password && form.value.confirmPassword && form.value.password !== form.value.confirmPassword">
+            <span
+              *ngIf="form.value.password && form.value.confirmPassword && form.value.password !== form.value.confirmPassword"
+            >
               Las contraseñas no coinciden.
             </span>
           </div>
@@ -163,7 +199,7 @@
       <!-- BOTÓN -->
       <button
         type="submit"
-        class="btn btn-primary w-100 mt-4"
+        class="btn btn-primary w-100 mt-4 btn-register"
         [disabled]="loading || form.invalid"
       >
         <ng-container *ngIf="!loading; else loadingTpl">
@@ -175,7 +211,7 @@
       </button>
     </form>
 
-    <div class="text-center mt-3">
+    <div class="text-center mt-3 register-footer">
       <span class="text-muted">¿Ya tienes cuenta?</span>
       <a class="ms-1" routerLink="/auth">Iniciar sesión</a>
     </div>
